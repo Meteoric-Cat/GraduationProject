@@ -14,10 +14,12 @@ import other.DatabaseSyntaxHelper;
  */
 public class User {
     private String tableName;
+    private String primaryKey;
     private HashMap columnDefinitions;
     
     public User() {
         this.tableName = "Users";
+        this.primaryKey = "id";
         
         this.columnDefinitions = new HashMap();
         this.columnDefinitions.put("id", DatabaseSyntaxHelper.DataType.NUMERIC_TYPE);
