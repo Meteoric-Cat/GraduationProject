@@ -6,6 +6,9 @@
 package control;
 
 import data.DataManager;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -14,6 +17,8 @@ import data.DataManager;
 public class UserManagementController {    
     private final int DEFAULT_ACCOUNT_INFO_LENGTH = 4;
     private String resultMessage;
+    
+    private String[] savedAccounts;
     
     public UserManagementController() {
         this.resultMessage = null;
@@ -70,9 +75,46 @@ public class UserManagementController {
         return false;
     }
     
+    public String[] processPreLogin(String prefix) {
+        if (prefix == null || prefix.isEmpty()) {
+            if (this.savedAccounts == null)
+                this.savedAccounts = DataManager.getInstance().getUsers().getSavedAccounts(DataManager.getInstance().getDatabaseConnection());
+            return this.savedAccounts;
+        } else {
+            if (this.savedAccounts != null) {
+                List<String> result = new ArrayList<String>();
+                for (String account : savedAccounts)
+                    if (account.startsWith(prefix)) 
+                        result.add(account);
+                return Arrays.copyOf(result.toArray(), result.size(), String[].class);
+            }            
+        }
+        return null;
+    }
+    
+    public String processPasswordRetrieval(String account) {
+        if (!account.isEmpty()) {
+            return DataManager.getInstance().getUsers().getPassword(DataManager.getInstance().getDatabaseConnection(), account);
+        }
+        return "";
+    }
+    
     public boolean processLogin(String account, String password, boolean isRemembered)
     {
-        return false;
+        LoginResultMessenger resultMessenger = new LoginResultMessenger();
+        if (account.isEmpty() || password.isEmpty()) {
+            this.resultMessage = resultMessenger.FIELD_EMPTY_ERROR;
+            return false;
+        }
+        
+        if (DataManager.getInstance().getUsers().countAccount(DataManager.getInstance().getDatabaseConnection(), account, password) == 0) {
+            this.resultMessage = resultMessenger.INVALID_ACCOUNT;
+            return false;
+        }
+        
+        DataManager.getInstance().getUsers().updateAccountLogin(DataManager.getInstance().getDatabaseConnection(), account, password, isRemembered);
+        this.resultMessage = resultMessenger.LOGIN_SUCCESS;
+        return true;
     }
     
     public String getResultMessage() {
@@ -87,5 +129,12 @@ public class UserManagementController {
         public final String SQL_ERROR = "An error has happened in interaction with database, try it again";
         
         public final String CREATION_SUCCESS = "Your account has been created successfully";
+    }
+    
+    public class LoginResultMessenger {
+        public final String FIELD_EMPTY_ERROR = "Fill all the required fields please";
+        public final String INVALID_ACCOUNT = "Your account or password is incorrect, input again";
+        
+        public final String LOGIN_SUCCESS = "Login success";
     }
 }

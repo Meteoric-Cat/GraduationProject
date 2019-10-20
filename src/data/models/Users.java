@@ -33,8 +33,8 @@ public class Users {
     private final int DEFAULT_USER_COL_NUMBER = 4;
     
     private final String DEFAULT_LANGUAGE = "en";
-    private final String DEFAULT_AUTO_LOGIN = "0";
-    
+    private final String DEFAULT_AUTO_LOGIN = String.valueOf(false);   
+        
     public Users() {
         this.tableName = "Users";
         this.primaryKey = "id";
@@ -114,7 +114,7 @@ public class Users {
             checkStatement = con.createStatement();            
             DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
             ResultSet res = checkStatement.executeQuery(
-                    helper.countRecord(tableName, new DatabaseSyntaxHelper.RecordValue(this.columnDefs.get(0).name, account, this.columnDefs.get(0).type)));
+                    helper.selectRecord(tableName, "COUNT(*)", new DatabaseSyntaxHelper.RecordValue(this.columnDefs.get(0).name, account, this.columnDefs.get(0).type)));
             while (res.next()) {
                 return res.getInt(1);
             }
@@ -125,11 +125,120 @@ public class Users {
                 try {
                     checkStatement.close();
                 } catch (SQLException ex) {
-                    Logger.getLogger(Users.class.getName()).log(Level.SEVERE, null, ex);
+                    ex.printStackTrace();
                 }
             }
         }
         
         return 0;
+    }
+    
+    public int countAccount(Connection con, String account, String password) {
+        Statement checkStatement = null;
+        //String colName = "account";
+        
+        try {
+            checkStatement = con.createStatement();            
+            DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
+            ResultSet res = checkStatement.executeQuery(
+                    helper.selectRecord(tableName, "COUNT(*)", 
+                            new DatabaseSyntaxHelper.RecordValue(this.columnDefs.get(0).name, account, this.columnDefs.get(0).type),
+                            new DatabaseSyntaxHelper.RecordValue(this.columnDefs.get(1).name, password, this.columnDefs.get(1).type))
+            );
+            while (res.next()) {
+                return res.getInt(1);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (checkStatement != null) {
+                try {
+                    checkStatement.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        
+        return 0;
+    }
+
+
+    public String[] getSavedAccounts(Connection con) {
+        Statement selectStatement = null;
+        ArrayList<String> result = new ArrayList<String>();            
+        result.add("");
+        
+        try {
+            selectStatement = con.createStatement();
+            
+            DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
+            ResultSet res = selectStatement.executeQuery(
+                helper.selectRecord(tableName, "account", new DatabaseSyntaxHelper.RecordValue(this.columnDefs.get(6).name, String.valueOf(true), tableName)));
+            
+            while (res.next()) {
+                result.add(res.getString(1));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (selectStatement != null) {
+                try {
+                    selectStatement.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        
+        return Arrays.copyOf(result.toArray(), result.size(), String[].class);
+    }
+    
+    public String getPassword(Connection con, String account) {
+        Statement selectStatement = null;
+        
+        try {
+            selectStatement = con.createStatement();
+            DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
+            //System.out.println(helper.selectRecord(tableName, "password", new RecordValue(this.columnDefs.get(0).name, account, this.columnDefs.get(0).type)));
+            ResultSet res = selectStatement.executeQuery(
+                    helper.selectRecord(tableName, "password", 
+                            new RecordValue(this.columnDefs.get(0).name, account, this.columnDefs.get(0).type),
+                            new RecordValue(this.columnDefs.get(6).name, String.valueOf(true), this.columnDefs.get(6).type)));
+            if (res.next()) {
+                return res.getString(1);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (selectStatement != null) {
+                try {
+                    selectStatement.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        return "";
+    }    
+    
+    public void updateAccountLogin(Connection con, String account, String password, boolean isRemembered) {
+        Statement updateStatement = null;
+        
+        try {
+            updateStatement = con.createStatement();
+            DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();           
+            
+            RecordValue[] setValues = new RecordValue[1];
+            setValues[0] = new RecordValue(this.columnDefs.get(6).name, String.valueOf(isRemembered), this.columnDefs.get(6).type);
+            RecordValue[] conditionValues = new RecordValue[2];
+            conditionValues[0] = new RecordValue(this.columnDefs.get(0).name, account, this.columnDefs.get(0).type);
+            conditionValues[1] = new RecordValue(this.columnDefs.get(1).name, password, this.columnDefs.get(1).type);
+            
+            updateStatement.executeUpdate(helper.updateRecord(tableName, setValues, conditionValues));
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        
     }
 }
