@@ -203,7 +203,8 @@ public class PanelCreateAccount extends javax.swing.JPanel {
                             tfieldPosition.getText(),
                             tfieldContactNumber.getText()};                                            
                     boolean creationResult = controller.processAccountCreation(accountInfo, otherInfo);
-                    if (creationResult) {                        
+                    if (creationResult) {   
+                        //System.out.println("hello world");
                         ApplicationWindow.getInstance().switchPanel(ApplicationWindow.PANEL_ID.LOGIN_ACCOUNT);
                     } 
                     JOptionPane.showMessageDialog(ApplicationWindow.getInstance(), controller.getResultMessage());

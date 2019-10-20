@@ -81,6 +81,7 @@ public class ApplicationWindow extends javax.swing.JFrame {
         }
         
         this.repaint();
+        this.revalidate();
     }
     
     public void disablePanel(javax.swing.JPanel panel)
@@ -91,10 +92,11 @@ public class ApplicationWindow extends javax.swing.JFrame {
     }
     
     public void enablePanel(javax.swing.JPanel panel)
-    {
-        this.setEnabled(true);
+    {        
+        panel.setEnabled(true);
         this.getContentPane().add(panel);
         panel.setBounds(0, 0, panel.getPreferredSize().width, panel.getPreferredSize().height);
-        this.setVisible(true);
+        panel.setVisible(true);
+        this.panelCurrent = panel;
     }
 }
