@@ -5,6 +5,7 @@
  */
 package project;
 
+import data.DataManager;
 import gui.ApplicationWindow;
 
 /**
@@ -34,6 +35,13 @@ public class Project {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(ApplicationWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                DataManager.getInstance().cleanUp();
+            }
+        });
         
         ApplicationWindow.getInstance().setVisible(true);
     }
