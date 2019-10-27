@@ -15,6 +15,7 @@ public class PanelMain extends javax.swing.JPanel{
     private javax.swing.JLabel labelTemplates;
     private javax.swing.JLabel labelUser;
     private javax.swing.JPanel panelOptions;
+    private PanelAccountInfo panelAccountInfo;
     
     public PanelMain() {
         initComponents();
@@ -68,7 +69,14 @@ public class PanelMain extends javax.swing.JPanel{
         panelOptions.add(labelSettings);
         labelSettings.setBounds(0, 800, 100, 100);
 
+        panelAccountInfo = new PanelAccountInfo();
+        
         add(panelOptions);
+        add(panelAccountInfo);
     }    
+ 
     
+    public PanelAccountInfo getPanelAccountInfo() {
+        return this.panelAccountInfo;
+    }
 }

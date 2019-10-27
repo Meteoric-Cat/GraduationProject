@@ -121,7 +121,9 @@ public class PanelLoginAccount extends javax.swing.JPanel {
                             cboxRemember.isSelected())) {
                         JOptionPane.showMessageDialog(ApplicationWindow.getInstance(), controller.getResultMessage());
                     } else {
+                        //controller.saveAccountId(tfieldAccount.getSelectedItem().toString(), String.valueOf(tfieldPassword.getPassword()));
                         ApplicationWindow.getInstance().switchPanel(ApplicationWindow.PANEL_ID.MAIN);
+                        ApplicationWindow.getInstance().getPanelMain().getPanelAccountInfo().populateData();
                     };
                 }
             }

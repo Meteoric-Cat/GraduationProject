@@ -99,4 +99,8 @@ public class ApplicationWindow extends javax.swing.JFrame {
         panel.setVisible(true);
         this.panelCurrent = panel;
     }
+    
+    public PanelMain getPanelMain() {
+        return this.panelMain;
+    }
 }

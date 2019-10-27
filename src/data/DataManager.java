@@ -6,6 +6,7 @@
 package data;
 
 import data.models.Users;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -18,11 +19,13 @@ import java.util.logging.Logger;
  * @author cloud
  */
 public class DataManager {
+    private final String FILE_PATH = System.getProperty("user.home").concat("/SNMPManager");
+    private final String USER_IMAGES_PATH = FILE_PATH.concat("/user_images/");
     private final String DEFAULT_DRIVER = "com.mysql.jdbc.Driver";
     private final String DEFAULT_URL = "jdbc:mysql://localhost/";
     private final String DEFAULT_USER = "root";
     private final String DEFAULT_PASSWORD = "caothanhhuyen123";
-    private final String DEFAULT_DATABASE = "legacy";
+    private final String DEFAULT_DATABASE = "legacy";    
 
     private Users users;
     
@@ -41,6 +44,7 @@ public class DataManager {
         initConnection();
         initDatabase();
         initTables();
+        initFileStorage();
     }
     
     private void initConnection() {
@@ -85,6 +89,17 @@ public class DataManager {
         users.createTable(this.connection);
     }
     
+    private void initFileStorage() {
+        File file = new File(this.FILE_PATH);
+        if (!file.exists()) {
+            file.mkdir();
+        }
+        file = new File(this.USER_IMAGES_PATH);
+        if (!file.exists()) {
+            file.mkdir();
+        }
+    }
+    
     public Connection getDatabaseConnection() {
         return this.connection;
     }
@@ -93,5 +108,12 @@ public class DataManager {
         return this.users;
     }
     
+    public String getFilePath() {
+        return this.FILE_PATH;
+    }
     
+    public String getUserImagesPath() {
+        return this.USER_IMAGES_PATH;
+    }
+
 }
