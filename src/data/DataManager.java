@@ -5,6 +5,7 @@
  */
 package data;
 
+import data.models.Devices;
 import data.models.Users;
 import java.io.File;
 import java.sql.Connection;
@@ -28,6 +29,7 @@ public class DataManager {
     private final String DEFAULT_DATABASE = "legacy";    
 
     private Users users;
+    private Devices devices;
     
     private Connection connection;
     
@@ -87,6 +89,9 @@ public class DataManager {
     private void initTables() {
         this.users = new Users();
         users.createTable(this.connection);
+        
+        this.devices = new Devices();
+        devices.createTable(this.connection);
     }
     
     private void initFileStorage() {
@@ -106,6 +111,10 @@ public class DataManager {
     
     public Users getUsers() {
         return this.users;
+    }
+    
+    public Devices getDevices() {
+        return this.devices;
     }
     
     public String getFilePath() {

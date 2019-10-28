@@ -6,6 +6,7 @@
 package other;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -113,11 +114,16 @@ public class DatabaseSyntaxHelper {
         return builder.toString();
     }
 
+    public class DataFormat {
+        public static final String DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
+    }
+    
     public class DataType {
 
         public static final String NUMERIC_TYPE = "INT";
         public static final String CHAR_TYPE = "MEDIUMTEXT";
         public static final String BOOLEAN_TYPE = "TINYINT";
+        public static final String DATE_TYPE = "MEDIUMTEXT";        
     }
 
     public static class RecordValue {
@@ -130,7 +136,7 @@ public class DatabaseSyntaxHelper {
             this.value = value;
             this.columnDef = new ColumnDefinition(name, type);
         }
-
+       
         public String getSQLNormalizedValue() {
             if (this.columnDef.type.equals(DataType.CHAR_TYPE)) {
                 return "\'" + this.value + "\'";
@@ -145,6 +151,10 @@ public class DatabaseSyntaxHelper {
             return this.columnDef.name;
         }
 
+        public String getValue() {
+            return this.value;
+        }
+        
         public String toEquationString() {
             if (this.columnDef.name != null) {
                 return this.columnDef.name + "=" + this.getSQLNormalizedValue();

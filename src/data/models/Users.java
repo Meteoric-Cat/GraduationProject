@@ -26,10 +26,9 @@ import other.DatabaseSyntaxHelper.RecordValue;
 public class Users {
 
     private static int loggedAccountId;
-
-    private String tableName;
-    private String primaryKey;
-    //private HashMap columnDefinitions;
+ 
+    private final String tableName = "Users";
+    private final String primaryKey = "id";
     private ArrayList<ColumnDefinition> columnDefs;
 
     private final int DEFAULT_ACCOUNT_COL_NUMBER = 2;
@@ -40,9 +39,6 @@ public class Users {
     private final String DEFAULT_IMAGE_DIR = " ";
 
     public Users() {
-        this.tableName = "Users";
-        this.primaryKey = "id";
-
         this.columnDefs = new ArrayList<ColumnDefinition>();
         //this.columnDefs.put("id", DatabaseSyntaxHelper.DataType.NUMERIC_TYPE);
         this.columnDefs.add(new ColumnDefinition("account", DatabaseSyntaxHelper.DataType.CHAR_TYPE));

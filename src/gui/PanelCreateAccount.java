@@ -194,8 +194,8 @@ public class PanelCreateAccount extends javax.swing.JPanel {
                     UserManagementController controller = new UserManagementController();
                     String[] accountInfo = {
                             tfieldAccount.getText(),
-                            tfieldPassword.getText(),
-                            tfieldConfirm.getText(),
+                            String.valueOf(tfieldPassword.getPassword()),
+                            String.valueOf(tfieldPassword.getPassword()),
                             String.valueOf(cboxTerm.isSelected())};
                     String[] otherInfo = {
                             tfieldFullname.getText(),

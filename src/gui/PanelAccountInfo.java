@@ -10,8 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -308,10 +306,10 @@ public class PanelAccountInfo extends javax.swing.JPanel {
                 javax.swing.JPanel source = (javax.swing.JPanel) e.getSource();
                 if (source == panelImage) {
                     javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
-                    FileNameExtensionFilter filter = new FileNameExtensionFilter("jpg", "png", "bmp");
-                    fileChooser.setFileFilter(filter);
-                    
+                    //FileNameExtensionFilter filter = new FileNameExtensionFilter("jpg", "png", "bmp");
+                    //fileChooser.setFileFilter(filter);                    
                     int result = fileChooser.showOpenDialog(null);
+                    
                     if (result == javax.swing.JFileChooser.APPROVE_OPTION) {
                         UserManagementController controller = new UserManagementController();                        
                         String imageFile = controller.proccessChangeAccountImage(fileChooser.getSelectedFile());
