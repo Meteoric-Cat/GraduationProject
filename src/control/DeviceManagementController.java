@@ -62,7 +62,7 @@ public class DeviceManagementController {
         return result;
     }
 
-    public ArrayList<String[]> processInitData() {
+    public ArrayList<String[]> processInitDeviceList() {
         return DataManager.getInstance().getDevices().getDeviceList(DataManager.getInstance().getDatabaseConnection(), null);
     }
 
@@ -79,6 +79,31 @@ public class DeviceManagementController {
         return false;
     }
 
+    public String[] proccessGettingDeviceInfo(String deviceLabel) {
+        String[] result = DataManager.getInstance().getDevices().getDeviceInfo(DataManager.getInstance().getDatabaseConnection(), deviceLabel, null);
+        ResultMessenger resultMessenger = new ResultMessenger();
+        
+        if (result == null) {
+            this.resultMessage = resultMessenger.GETTING_FAILED;
+        } else 
+            this.resultMessage = resultMessenger.GETTING_SUCCESS;        
+        
+        return result;
+    }
+    
+    public boolean saveDeviceInfo(String deviceLabel, String[] deviceInfo) {
+        int result = DataManager.getInstance().getDevices().updateDeviceInfo(DataManager.getInstance().getDatabaseConnection(), deviceLabel, deviceInfo);
+        ResultMessenger resultMessenger = new ResultMessenger();
+        
+        if (result == 0) {
+            this.resultMessage = resultMessenger.SETTING_FAILED;
+            return false;
+        }
+        
+        this.resultMessage = resultMessenger.SETTING_SUCCESS;
+        return true;
+    }    
+    
     public String getResultMessage() {
         return this.resultMessage;
     }
@@ -95,5 +120,12 @@ public class DeviceManagementController {
 
         public final String SUCCESS = "Selected devices were removed successfully";
         public final String FAILED = "Some devices could not be removed";
+    }
+    
+    public class ResultMessenger {
+        public final String GETTING_SUCCESS = "Getting info of the device is successed";
+        public final String GETTING_FAILED = "Some errors happened when getting info of the device";
+        public final String SETTING_FAILED = "Some errors happened when updating device info";
+        public final String SETTING_SUCCESS = "Device info was updated successfully";
     }
 }

@@ -168,6 +168,95 @@ public class Devices {
         return result;
     }
     
+    public String[] getDeviceInfo(Connection con, String label, String[] orders) {
+        Statement selectStatement = null;
+        String[] result = null;
+        String select = "";
+
+        try {
+            selectStatement = con.createStatement();
+            DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
+            int size = 0;
+            
+            if (orders == null) {
+                size = this.columnDefs.size() - 1;
+                for (int i = 0; i < size; i++) {
+                    select += this.columnDefs.get(i).name + ",";
+                }
+                select += this.columnDefs.get(size).name;
+            } else {
+                size = orders.length - 1;
+                for (int i = 0; i < size; i++) {
+                    select += orders[i] + ",";
+                }
+                select += orders[size];
+            }
+            
+            ResultSet res = selectStatement.executeQuery(helper.selectRecord(tableName, select,
+                    new RecordValue(this.columnDefs.get(LABEL_COL_ID).name, label, this.columnDefs.get(LABEL_COL_ID).type)));
+            size++;
+            result = new String[size];
+            
+            if (res.next()) {
+                for (int i = 0; i < size; i++) {
+                    if (i == STATE_COL_ID) {
+                        result[i] = this.denormalizeStateValue(res.getString(i + 1));
+                    } else {
+                        result[i] = res.getString(1 + i);
+                    }
+                    
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (selectStatement != null) {
+                try {
+                    selectStatement.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        
+        return result;        
+    }
+    
+    public int updateDeviceInfo(Connection con, String deviceLabel, String[] info) {
+        Statement updateStatement = null;
+        int result = 0;       
+        
+        try {
+            updateStatement = con.createStatement();
+            DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
+            
+            RecordValue[] setValues = new RecordValue[info.length];
+            for (int i = 0; i < info.length; i++) 
+                setValues[i] = new RecordValue(this.columnDefs.get(i).name, info[i], this.columnDefs.get(i).type);
+            if (info.length > STATE_COL_ID) {
+                setValues[STATE_COL_ID].setValue(this.normalizeStateValue(info[STATE_COL_ID]));
+            }
+            
+            RecordValue[] conditionValues = {
+                new RecordValue(this.columnDefs.get(LABEL_COL_ID).name, deviceLabel, this.columnDefs.get(LABEL_COL_ID).type)
+            };
+            
+            result = updateStatement.executeUpdate(helper.updateRecord(tableName, setValues, conditionValues));            
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (updateStatement != null) {
+                try {
+                    updateStatement.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        
+        return result;
+    }
+    
     public int deleteDeivices(Connection con, String[] devices) {
         Statement deleteStatement = null;
         int result = 0;
@@ -209,6 +298,12 @@ public class Devices {
             return DeviceState.DISABLED;
         }
         return DeviceState.ENABLED;
+    }
+    
+    public class DeviceType {
+        public static final String ROUTER = "Router";
+        public static final String PC = "PC";
+        public static final String SWITCH = "Switch";
     }
     
     public class DeviceState {

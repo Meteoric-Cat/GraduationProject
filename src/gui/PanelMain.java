@@ -24,14 +24,16 @@ public class PanelMain extends javax.swing.JPanel{
     private javax.swing.JPanel panelOptions;    
     private PanelAccountInfo panelAccountInfo;
     private PanelDevicesList panelDevicesList;
+    private PanelDeviceInfo panelDeviceInfo;
     
     private javax.swing.JPanel curMainChild;
     
     public static enum PANEL_ID {
         PANEL_DEVICES,
         PANEL_TEMPLATES,
-        PANEL_ACCOUNT,
-        PANEL_SETTINGS
+        PANEL_ACCOUNT_INFO,
+        PANEL_SETTINGS, 
+        PANEL_DEVICE_INFO
     }
     
     public PanelMain() {
@@ -99,6 +101,10 @@ public class PanelMain extends javax.swing.JPanel{
         panelDevicesList = new PanelDevicesList();
         panelDevicesList.setVisible(false);
         panelDevicesList.setEnabled(false);
+        
+        panelDeviceInfo = new PanelDeviceInfo();
+        panelDeviceInfo.setVisible(false);
+        panelDeviceInfo.setEnabled(false);
     }
     
     private void initListeners() {
@@ -107,10 +113,10 @@ public class PanelMain extends javax.swing.JPanel{
             public void mouseClicked(MouseEvent e) {
                 javax.swing.JLabel source = (javax.swing.JLabel) e.getSource();
                 if (source == labelDevices) {
-                    PanelMain.this.switchPanel(PANEL_ID.PANEL_DEVICES);
+                    PanelMain.this.switchPanelForOptions(PANEL_ID.PANEL_DEVICES);
                 }
                 if (source == labelUser) {
-                    PanelMain.this.switchPanel(PANEL_ID.PANEL_ACCOUNT);
+                    PanelMain.this.switchPanelForOptions(PANEL_ID.PANEL_ACCOUNT_INFO);
                 }
             }
         };
@@ -125,12 +131,13 @@ public class PanelMain extends javax.swing.JPanel{
         return this.panelAccountInfo;
     }
     
-    private void switchPanel(PANEL_ID id) {
+    private void switchPanelForOptions(PANEL_ID id) {
         switch (id) {
             case PANEL_DEVICES:
                 this.enablePanel(this.panelDevicesList);
+                this.panelDevicesList.refreshViewData();
                 break;
-            case PANEL_ACCOUNT:
+            case PANEL_ACCOUNT_INFO:
                 this.enablePanel(this.panelAccountInfo);
                 break;
         }
@@ -139,6 +146,17 @@ public class PanelMain extends javax.swing.JPanel{
         this.repaint();
     }
         
+    public void switchPanelForDisplayDetail(PANEL_ID id) {
+        switch(id) {
+            case PANEL_DEVICE_INFO:
+                this.enablePanel(this.panelDeviceInfo);
+                break;
+        }
+        
+        this.revalidate();
+        this.repaint();
+    }
+    
     public void enablePanel(javax.swing.JPanel panel) {
         this.remove(this.curMainChild);
         this.curMainChild.setVisible(false);
@@ -148,5 +166,9 @@ public class PanelMain extends javax.swing.JPanel{
         panel.setVisible(true);
         this.add(panel);
         this.curMainChild = panel;        
+    }
+    
+    public PanelDeviceInfo getPanelDeviceInfo() {
+        return this.panelDeviceInfo;
     }
 }
