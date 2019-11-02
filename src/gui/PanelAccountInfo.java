@@ -306,8 +306,8 @@ public class PanelAccountInfo extends javax.swing.JPanel {
                 javax.swing.JPanel source = (javax.swing.JPanel) e.getSource();
                 if (source == panelImage) {
                     javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
-                    //FileNameExtensionFilter filter = new FileNameExtensionFilter("jpg", "png", "bmp");
-                    //fileChooser.setFileFilter(filter);                    
+                    FileNameExtensionFilter filter = new FileNameExtensionFilter("images", "jpg", "bmp", "png");
+                    fileChooser.setFileFilter(filter);                    
                     int result = fileChooser.showOpenDialog(null);
                     
                     if (result == javax.swing.JFileChooser.APPROVE_OPTION) {

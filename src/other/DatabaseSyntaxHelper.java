@@ -94,13 +94,13 @@ public class DatabaseSyntaxHelper {
         builder.append("UPDATE ");
         builder.append(tableName);
         builder.append(" SET ");
-        
+
         for (int i = 0; i < setValues.length - 1; i++) {
             builder.append(setValues[i].toEquationString());
             builder.append(",");
         }
         builder.append(setValues[setValues.length - 1].toEquationString());
-        
+
         if (conditionValues != null) {
             builder.append(" WHERE ");
             for (int i = 0; i < conditionValues.length; i++) {
@@ -110,20 +110,36 @@ public class DatabaseSyntaxHelper {
             builder.append("TRUE");
         }
         builder.append(";");
+
+        return builder.toString();
+    }
+    
+    public String deleteRecord(String tableName, RecordValue[] conditionValues) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("DELETE FROM ");
+        builder.append(tableName);
+        builder.append(" WHERE ");
+
+        for (int i = 0; i < conditionValues.length - 1; i++) {
+            builder.append(conditionValues[i].toEquationString());
+            builder.append(" OR ");
+        }
+        builder.append(conditionValues[conditionValues.length - 1].toEquationString());
         
         return builder.toString();
     }
 
     public class DataFormat {
+
         public static final String DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
     }
-    
+
     public class DataType {
 
         public static final String NUMERIC_TYPE = "INT";
         public static final String CHAR_TYPE = "MEDIUMTEXT";
         public static final String BOOLEAN_TYPE = "TINYINT";
-        public static final String DATE_TYPE = "MEDIUMTEXT";        
+        public static final String DATE_TYPE = "MEDIUMTEXT";
     }
 
     public static class RecordValue {
@@ -136,7 +152,7 @@ public class DatabaseSyntaxHelper {
             this.value = value;
             this.columnDef = new ColumnDefinition(name, type);
         }
-       
+
         public String getSQLNormalizedValue() {
             if (this.columnDef.type.equals(DataType.CHAR_TYPE)) {
                 return "\'" + this.value + "\'";
@@ -150,11 +166,15 @@ public class DatabaseSyntaxHelper {
         public String getName() {
             return this.columnDef.name;
         }
+        
+        public void setValue(String value) {
+            this.value = value;
+        }
 
         public String getValue() {
             return this.value;
         }
-        
+
         public String toEquationString() {
             if (this.columnDef.name != null) {
                 return this.columnDef.name + "=" + this.getSQLNormalizedValue();

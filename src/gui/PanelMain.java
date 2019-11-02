@@ -5,6 +5,10 @@
  */
 package gui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 /**
  *
  * @author cloud
@@ -14,11 +18,25 @@ public class PanelMain extends javax.swing.JPanel{
     private javax.swing.JLabel labelSettings;
     private javax.swing.JLabel labelTemplates;
     private javax.swing.JLabel labelUser;
-    private javax.swing.JPanel panelOptions;
+    
+    private java.awt.event.MouseAdapter listenerLabel;
+    
+    private javax.swing.JPanel panelOptions;    
     private PanelAccountInfo panelAccountInfo;
+    private PanelDevicesList panelDevicesList;
+    
+    private javax.swing.JPanel curMainChild;
+    
+    public static enum PANEL_ID {
+        PANEL_DEVICES,
+        PANEL_TEMPLATES,
+        PANEL_ACCOUNT,
+        PANEL_SETTINGS
+    }
     
     public PanelMain() {
         initComponents();
+        initListeners();
     }
     
     private void initComponents() {
@@ -69,14 +87,66 @@ public class PanelMain extends javax.swing.JPanel{
         panelOptions.add(labelSettings);
         labelSettings.setBounds(0, 800, 100, 100);
 
-        panelAccountInfo = new PanelAccountInfo();
-        
-        add(panelOptions);
-        add(panelAccountInfo);
+        initChildPanels();
     }    
  
+    private void initChildPanels() {
+        panelAccountInfo = new PanelAccountInfo();
+        add(panelOptions);
+        add(panelAccountInfo);        
+        this.curMainChild = panelAccountInfo;
+
+        panelDevicesList = new PanelDevicesList();
+        panelDevicesList.setVisible(false);
+        panelDevicesList.setEnabled(false);
+    }
+    
+    private void initListeners() {
+        this.listenerLabel = new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                javax.swing.JLabel source = (javax.swing.JLabel) e.getSource();
+                if (source == labelDevices) {
+                    PanelMain.this.switchPanel(PANEL_ID.PANEL_DEVICES);
+                }
+                if (source == labelUser) {
+                    PanelMain.this.switchPanel(PANEL_ID.PANEL_ACCOUNT);
+                }
+            }
+        };
+        
+        this.labelDevices.addMouseListener(this.listenerLabel);
+        this.labelUser.addMouseListener(this.listenerLabel);
+        this.labelTemplates.addMouseListener(this.listenerLabel);
+        this.labelSettings.addMouseListener(this.listenerLabel);
+    }
     
     public PanelAccountInfo getPanelAccountInfo() {
         return this.panelAccountInfo;
+    }
+    
+    private void switchPanel(PANEL_ID id) {
+        switch (id) {
+            case PANEL_DEVICES:
+                this.enablePanel(this.panelDevicesList);
+                break;
+            case PANEL_ACCOUNT:
+                this.enablePanel(this.panelAccountInfo);
+                break;
+        }
+        
+        this.revalidate();
+        this.repaint();
+    }
+        
+    public void enablePanel(javax.swing.JPanel panel) {
+        this.remove(this.curMainChild);
+        this.curMainChild.setVisible(false);
+        this.curMainChild.setEnabled(false);
+        
+        panel.setEnabled(true);
+        panel.setVisible(true);
+        this.add(panel);
+        this.curMainChild = panel;        
     }
 }
