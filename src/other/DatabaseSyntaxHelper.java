@@ -75,8 +75,10 @@ public class DatabaseSyntaxHelper {
         StringBuilder builder = new StringBuilder();
         builder.append("SELECT ");
         builder.append(selectClause);
-        builder.append(" FROM ");
-        builder.append(tableName);
+        if (tableName != null) {
+            builder.append(" FROM ");
+            builder.append(tableName);
+        }
         if (values != null) {
             builder.append(" WHERE ");
             for (RecordValue value : values) {
@@ -89,6 +91,10 @@ public class DatabaseSyntaxHelper {
         return builder.toString();
     }
 
+    public String selectInsertedId() {
+        return this.selectRecord(null, "LAST_INSERT_ID()", null);
+    }
+    
     public String updateRecord(String tableName, RecordValue[] setValues, RecordValue[] conditionValues) {
         StringBuilder builder = new StringBuilder();
         builder.append("UPDATE ");

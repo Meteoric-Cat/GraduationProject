@@ -73,39 +73,48 @@ public class PanelDevicesList extends javax.swing.JPanel {
         labelTotal.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         labelTotal.setText("Total:");
         add(labelTotal);
-        labelTotal.setBounds(170, 30, 40, 19);
+        labelTotal.setBounds(170, 30, 36, 19);
 
         labelTotalValue.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        labelTotalValue.setText("0");
+        labelTotalValue.setText("...");
+        labelTotalValue.setMaximumSize(new java.awt.Dimension(30, 19));
+        labelTotalValue.setMinimumSize(new java.awt.Dimension(30, 19));
+        labelTotalValue.setPreferredSize(new java.awt.Dimension(30, 19));
         add(labelTotalValue);
         labelTotalValue.setBounds(210, 30, 30, 19);
 
         labelEnabled.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         labelEnabled.setText("Enabled:");
         add(labelEnabled);
-        labelEnabled.setBounds(270, 30, 60, 19);
+        labelEnabled.setBounds(270, 30, 56, 19);
 
         labelEnabledValue.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        labelEnabledValue.setText("0");
+        labelEnabledValue.setText("...");
+        labelEnabledValue.setMaximumSize(new java.awt.Dimension(30, 19));
+        labelEnabledValue.setMinimumSize(new java.awt.Dimension(30, 19));
+        labelEnabledValue.setPreferredSize(new java.awt.Dimension(30, 19));
         add(labelEnabledValue);
-        labelEnabledValue.setBounds(330, 30, 40, 19);
+        labelEnabledValue.setBounds(330, 30, 30, 19);
 
         labelDisabled.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         labelDisabled.setText("Disabled:");
         add(labelDisabled);
-        labelDisabled.setBounds(380, 30, 60, 19);
+        labelDisabled.setBounds(390, 30, 59, 19);
 
         labelDisabledValue.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        labelDisabledValue.setText("0");
+        labelDisabledValue.setText("...");
+        labelDisabledValue.setMaximumSize(new java.awt.Dimension(30, 19));
+        labelDisabledValue.setMinimumSize(new java.awt.Dimension(30, 19));
+        labelDisabledValue.setPreferredSize(new java.awt.Dimension(30, 19));
         add(labelDisabledValue);
-        labelDisabledValue.setBounds(440, 30, 40, 19);
+        labelDisabledValue.setBounds(450, 30, 30, 19);
 
         buttonImport.setText("Import");
         buttonImport.setMaximumSize(new java.awt.Dimension(80, 30));
         buttonImport.setMinimumSize(new java.awt.Dimension(80, 30));
         buttonImport.setPreferredSize(new java.awt.Dimension(80, 30));
         add(buttonImport);
-        buttonImport.setBounds(1060, 30, 65, 23);
+        buttonImport.setBounds(1210, 20, 80, 30);
 
         tableDevices.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
@@ -187,17 +196,19 @@ public class PanelDevicesList extends javax.swing.JPanel {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 counterRowClicking++;
-                if (counterRowClicking > 2) {
+                if (counterRowClicking == 2) {
                     counterRowClicking = 0;
-                    ApplicationWindow.getInstance().getPanelMain().switchPanelForDisplayDetail(PanelMain.PANEL_ID.PANEL_DEVICE_INFO);
-                    ApplicationWindow.getInstance().getPanelMain()
-                            .getPanelDeviceInfo().initViewData(String.valueOf(tableDevices.getValueAt(tableDevices.getSelectedRow(), LABEL_COL_ID)));
+                    if (tableDevices.getSelectedRowCount() == 1) {
+                        ApplicationWindow.getInstance().getPanelMain().switchPanelForDisplayDetail(PanelMain.PANEL_ID.PANEL_DEVICE_INFO);
+                        ApplicationWindow.getInstance().getPanelMain()
+                                .getPanelDeviceInfo().initViewData(String.valueOf(tableDevices.getValueAt(tableDevices.getSelectedRow(), LABEL_COL_ID)));
+                    }
                 }
             }
         };
         this.tableDevices.addMouseListener(this.mlistenerTable);
     }
-    
+
     private void initViewData() {
         DefaultTableModel tableModel = (DefaultTableModel) this.tableDevices.getModel();
         for (int i = tableModel.getRowCount(); i > 0; i--) {
@@ -217,7 +228,7 @@ public class PanelDevicesList extends javax.swing.JPanel {
     public void refreshViewData() {
         this.initViewData();
     }
-    
+
     private void showPopup(int x, int y) {
         this.popupMenu.show(this, x, y);
     }

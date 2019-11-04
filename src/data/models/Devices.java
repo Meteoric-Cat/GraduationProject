@@ -257,7 +257,7 @@ public class Devices {
         return result;
     }
     
-    public int deleteDeivices(Connection con, String[] devices) {
+    public int deleteDevices(Connection con, String[] devices) {
         Statement deleteStatement = null;
         int result = 0;
         

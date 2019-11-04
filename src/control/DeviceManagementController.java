@@ -68,7 +68,7 @@ public class DeviceManagementController {
 
     public boolean processDevicesDeletion(String[] devices) {
         DeletionResultMessenger resultMessenger = new DeletionResultMessenger();
-        int queryResult = DataManager.getInstance().getDevices().deleteDeivices(DataManager.getInstance().getDatabaseConnection(), devices);
+        int queryResult = DataManager.getInstance().getDevices().deleteDevices(DataManager.getInstance().getDatabaseConnection(), devices);
 
         if (queryResult == devices.length) {
             this.resultMessage = resultMessenger.SUCCESS;

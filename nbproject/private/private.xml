@@ -3,15 +3,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/cloud/Documents/Java/Graduation/Project/src/other/DatabaseSyntaxHelper.java</file>
-            <file>file:/home/cloud/Documents/Java/Graduation/Project/src/gui/PanelMain.java</file>
-            <file>file:/home/cloud/Documents/Java/Graduation/Project/src/data/models/Devices.java</file>
-            <file>file:/home/cloud/Documents/Java/Graduation/Project/src/data/models/Users.java</file>
-            <file>file:/home/cloud/Documents/Java/Graduation/Project/src/control/DeviceManagementController.java</file>
-            <file>file:/home/cloud/Documents/Java/Graduation/Project/src/gui/PanelDevicesList.java</file>
-            <file>file:/home/cloud/Documents/Java/Graduation/Project/src/gui/PanelAccountInfo.java</file>
-            <file>file:/home/cloud/Documents/Java/Graduation/Project/src/control/UserManagementController.java</file>
-            <file>file:/home/cloud/Documents/Java/Graduation/Project/src/gui/ApplicationWindow.java</file>
+            <file>file:/E:/SchoolProject/GraduationProject/src/data/DataManager.java</file>
+            <file>file:/E:/SchoolProject/GraduationProject/src/gui/PanelDevicesList.java</file>
+            <file>file:/E:/SchoolProject/GraduationProject/src/other/DatabaseSyntaxHelper.java</file>
+            <file>file:/E:/SchoolProject/GraduationProject/src/control/TemplateManagementController.java</file>
+            <file>file:/E:/SchoolProject/GraduationProject/src/gui/PanelTemplatesList.java</file>
+            <file>file:/E:/SchoolProject/GraduationProject/src/data/models/Templates.java</file>
+            <file>file:/E:/SchoolProject/GraduationProject/src/control/DeviceManagementController.java</file>
+            <file>file:/E:/SchoolProject/GraduationProject/src/data/models/TemplateItems.java</file>
+            <file>file:/E:/SchoolProject/GraduationProject/src/data/models/Devices.java</file>
         </group>
     </open-files>
 </project-private>
