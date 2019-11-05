@@ -27,14 +27,15 @@ public class TemplateItems {
     private ArrayList<ColumnDefinition> columnDefs;
 
     private HashMap<String, String> foreignKeys;
-    private final int FOREIGN_KEY_COL_ID = 4;
+    private final int FOREIGN_KEY_COL_ID = 5;
     
     public TemplateItems() {
         this.columnDefs = new ArrayList<ColumnDefinition>();
         this.columnDefs.add(new ColumnDefinition("name", DatabaseSyntaxHelper.DataType.CHAR_TYPE));
         this.columnDefs.add(new ColumnDefinition("object_id", DatabaseSyntaxHelper.DataType.CHAR_TYPE));
         this.columnDefs.add(new ColumnDefinition("value_type", DatabaseSyntaxHelper.DataType.CHAR_TYPE));
-        this.columnDefs.add(new ColumnDefinition("access_type", DatabaseSyntaxHelper.DataType.DATE_TYPE));        
+        this.columnDefs.add(new ColumnDefinition("access_type", DatabaseSyntaxHelper.DataType.DATE_TYPE)); 
+        this.columnDefs.add(new ColumnDefinition("description", DatabaseSyntaxHelper.DataType.CHAR_TYPE));
         this.columnDefs.add(new ColumnDefinition("owned_template", DatabaseSyntaxHelper.DataType.NUMERIC_TYPE));
         
         this.foreignKeys = new HashMap<String, String>();
