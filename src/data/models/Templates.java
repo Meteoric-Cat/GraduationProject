@@ -95,7 +95,7 @@ public class Templates {
                 if (templateId != null) {
                     int itemListSize = itemList.size();
                     for (int i = 0; i < itemListSize; i++) {
-                        DataManager.getInstance().getTemplateItems().importTemplate(con, templateId, itemList.get(i));
+                        DataManager.getInstance().getTemplateItems().importTemplateItem(con, templateId, itemList.get(i));
                     }
                 }
             }
@@ -174,12 +174,13 @@ public class Templates {
             deleteStatement = con.createStatement();
             DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
 
-            RecordValue[] conditionValues = new RecordValue[templates.length];
+            RecordValue[] templateConditionValues = new RecordValue[templates.length];
             for (int i = 0; i < templates.length; i++) {
-                conditionValues[i] = new RecordValue(this.PRIMARY_KEY.name, templates[i], this.PRIMARY_KEY.type);
+                templateConditionValues[i] = new RecordValue(this.PRIMARY_KEY.name, templates[i], this.PRIMARY_KEY.type);
+                DataManager.getInstance().getTemplateItems().deleteItemsOfTemplate(con, templates[i]);
             }
 
-            result = deleteStatement.executeUpdate(helper.deleteRecord(this.TABLE_NAME, conditionValues));
+            result = deleteStatement.executeUpdate(helper.deleteRecord(this.TABLE_NAME, templateConditionValues));
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {

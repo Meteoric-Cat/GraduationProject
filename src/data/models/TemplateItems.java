@@ -10,8 +10,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import other.DatabaseSyntaxHelper;
 import other.DatabaseSyntaxHelper.ColumnDefinition;
+import other.DatabaseSyntaxHelper.RecordValue;
 
 /**
  *
@@ -57,7 +60,7 @@ public class TemplateItems {
         }
     }
 
-    public int importTemplate(Connection con, String templateId, String[] info) {
+    public int importTemplateItem(Connection con, String templateId, String[] info) {
         //use default order as of column definitions
         Statement insertStatement = null;
         int result = -1;
@@ -88,5 +91,32 @@ public class TemplateItems {
         return result;
     }
 
+    public int deleteItemsOfTemplate(Connection con, String templateId) {
+        Statement deletionStatement = null;
+        int result = -1;
+        
+        try {
+            deletionStatement = con.createStatement();
+            DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
+            
+            RecordValue[] conditionValues = {
+                new RecordValue(this.columnDefs.get(this.FOREIGN_KEY_COL_ID).name, templateId, this.columnDefs.get(this.FOREIGN_KEY_COL_ID).type)            
+            };
+            
+            result = deletionStatement.executeUpdate(helper.deleteRecord(TABLE_NAME, conditionValues));                       
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (deletionStatement != null) {
+                try {
+                    deletionStatement.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        
+        return result;
+    }
     
 }
