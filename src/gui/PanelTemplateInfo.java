@@ -180,6 +180,9 @@ public class PanelTemplateInfo extends javax.swing.JPanel {
                 }
             }            
         };
+        
+        this.buttonCancel.addActionListener(listenerButton);
+        this.buttonSave.addActionListener(listenerButton);
     }
     
     public void initViewData(String templateId) {
