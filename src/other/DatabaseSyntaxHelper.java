@@ -37,9 +37,9 @@ public class DatabaseSyntaxHelper {
         if (foreignKeys != null) {
             Set<String> keyNames = foreignKeys.keySet();
             for (String keyName : keyNames) {
-                builder.append(",FOREIGN KEY ");
+                builder.append(",FOREIGN KEY (");
                 builder.append(keyName);
-                builder.append(" REFERENCES ");
+                builder.append(") REFERENCES ");
                 builder.append(foreignKeys.get(keyName));
             }
         }

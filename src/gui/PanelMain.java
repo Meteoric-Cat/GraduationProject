@@ -129,6 +129,9 @@ public class PanelMain extends javax.swing.JPanel{
                 if (source == labelUser) {
                     PanelMain.this.switchPanelForOptions(PANEL_ID.PANEL_ACCOUNT_INFO);
                 }
+                if (source == labelTemplates) {
+                    PanelMain.this.switchPanelForOptions(PANEL_ID.PANEL_TEMPLATES);
+                }
             }
         };
         

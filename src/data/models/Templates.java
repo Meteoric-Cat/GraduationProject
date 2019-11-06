@@ -127,7 +127,7 @@ public class Templates {
             int size = 0;
 
             if (orders == null) {
-                select = PRIMARY_KEY.name;
+                select = PRIMARY_KEY.name + ",";
                 size = this.columnDefs.size() - 1;
                 for (int i = 0; i < size; i++) {
                     select += this.columnDefs.get(i).name + ",";
@@ -141,6 +141,7 @@ public class Templates {
                 select += orders[size];
             }
 
+            System.out.println(select);
             ResultSet res = selectStatement.executeQuery(helper.selectRecord(this.TABLE_NAME, select, null));
             size++;
             String[] temp = null;
@@ -222,6 +223,8 @@ public class Templates {
                 select += orders[size];
             }
 
+            //System.out.println(select);
+            //System.out.println(size);
             size++;
             String[] temp = new String[size];
 
@@ -235,7 +238,8 @@ public class Templates {
                 result.add(temp);
             }
             
-            result.addAll(DataManager.getInstance().getTemplateItems().getItemsOfTemplate(con, templateId));
+            result.add(DataManager.getInstance().getTemplateItems().getItemIdsOfTemplate(con, templateId));
+            result.addAll(DataManager.getInstance().getTemplateItems().getItemsOfTemplate(con, templateId, null));
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {

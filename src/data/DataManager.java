@@ -100,6 +100,9 @@ public class DataManager {
 
         this.templates = new Templates();
         templates.createTable(this.connection);
+        
+        this.templateItems = new TemplateItems();
+        templateItems.createTable(this.connection);
     }
 
     private void initFileStorage() {

@@ -29,16 +29,16 @@ public class TemplateItems {
 
     private HashMap<String, String> foreignKeys;
     private final int FOREIGN_KEY_COL_ID = 5;
-    
+
     public TemplateItems() {
         this.columnDefs = new ArrayList<ColumnDefinition>();
         this.columnDefs.add(new ColumnDefinition("name", DatabaseSyntaxHelper.DataType.CHAR_TYPE));
         this.columnDefs.add(new ColumnDefinition("object_id", DatabaseSyntaxHelper.DataType.CHAR_TYPE));
         this.columnDefs.add(new ColumnDefinition("value_type", DatabaseSyntaxHelper.DataType.CHAR_TYPE));
-        this.columnDefs.add(new ColumnDefinition("access_type", DatabaseSyntaxHelper.DataType.DATE_TYPE)); 
+        this.columnDefs.add(new ColumnDefinition("access_type", DatabaseSyntaxHelper.DataType.DATE_TYPE));
         this.columnDefs.add(new ColumnDefinition("description", DatabaseSyntaxHelper.DataType.CHAR_TYPE));
-        this.columnDefs.add(new ColumnDefinition("owned_template", DatabaseSyntaxHelper.DataType.NUMERIC_TYPE));
-        
+        this.columnDefs.add(new ColumnDefinition("template_id", DatabaseSyntaxHelper.DataType.NUMERIC_TYPE));
+
         this.foreignKeys = new HashMap<String, String>();
         this.foreignKeys.put("template_id", "MIB_templates(id)");
     }
@@ -75,8 +75,8 @@ public class TemplateItems {
             for (int i = 0; i < info.length; i++) {
                 values[i] = new DatabaseSyntaxHelper.RecordValue(this.columnDefs.get(i).name, info[i], this.columnDefs.get(i).type);
             }
-            values[4] = new DatabaseSyntaxHelper.RecordValue(this.columnDefs.get(this.FOREIGN_KEY_COL_ID).name, templateId, this.columnDefs.get(this.FOREIGN_KEY_COL_ID).type);
-            
+            values[this.FOREIGN_KEY_COL_ID] = new DatabaseSyntaxHelper.RecordValue(this.columnDefs.get(this.FOREIGN_KEY_COL_ID).name, templateId, this.columnDefs.get(this.FOREIGN_KEY_COL_ID).type);
+
             result = insertStatement.executeUpdate(helper.insertRecord(this.TABLE_NAME, values));
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -96,16 +96,16 @@ public class TemplateItems {
     public int deleteItemsOfTemplate(Connection con, String templateId) {
         Statement deletionStatement = null;
         int result = -1;
-        
+
         try {
             deletionStatement = con.createStatement();
             DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
-            
+
             RecordValue[] conditionValues = {
-                new RecordValue(this.columnDefs.get(this.FOREIGN_KEY_COL_ID).name, templateId, this.columnDefs.get(this.FOREIGN_KEY_COL_ID).type)            
+                new RecordValue(this.columnDefs.get(this.FOREIGN_KEY_COL_ID).name, templateId, this.columnDefs.get(this.FOREIGN_KEY_COL_ID).type)
             };
-            
-            result = deletionStatement.executeUpdate(helper.deleteRecord(TABLE_NAME, conditionValues));                       
+
+            result = deletionStatement.executeUpdate(helper.deleteRecord(TABLE_NAME, conditionValues));
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
@@ -117,28 +117,66 @@ public class TemplateItems {
                 }
             }
         }
-        
+
         return result;
     }
     
-    public ArrayList<String[]> getItemsOfTemplate(Connection con, String templateId) {
+    public String[] getItemIdsOfTemplate(Connection con, String templateId) {
         Statement selectStatement = null;
-        ArrayList<String[]> result = new ArrayList<String[]>();
-        String select = "";
-        
+        ArrayList<String> result = new ArrayList<String>();
+         
         try {
             selectStatement = con.createStatement();
             DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
             
-            int tempSize = this.columnDefs.size() - 2;
-            for (int i = 0; i < tempSize; i++) {
-                select += (this.columnDefs.get(i).name + ",");
+            ResultSet res = selectStatement.executeQuery(helper.selectRecord(TABLE_NAME, this.PRIMARY_KEY.name, 
+                    new RecordValue(this.columnDefs.get(FOREIGN_KEY_COL_ID).name, templateId, this.columnDefs.get(FOREIGN_KEY_COL_ID).type)));
+            
+            while (res.next()) {
+                result.add(res.getString(1));
             }
-            select += this.columnDefs.get(tempSize).name;                       
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (selectStatement != null) {
+                try {
+                    selectStatement.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        
+        return (String[]) result.toArray();
+    }
+
+    public ArrayList<String[]> getItemsOfTemplate(Connection con, String templateId, String[] orders) {
+        Statement selectStatement = null;
+        ArrayList<String[]> result = new ArrayList<String[]>();
+        String select = "";
+
+        try {
+            selectStatement = con.createStatement();
+            DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
+            int tempSize = 0;
             
-            ResultSet res = selectStatement.executeQuery(helper.selectRecord(this.TABLE_NAME, select, 
+            if (orders == null) {
+                tempSize = this.columnDefs.size() - 2;
+                for (int i = 0; i < tempSize; i++) {
+                    select += (this.columnDefs.get(i).name + ",");
+                }
+                select += this.columnDefs.get(tempSize).name;
+            } else {
+                tempSize = orders.length - 1;
+                for (int i = 0; i < tempSize; i++) {
+                    select += (this.columnDefs.get(i).name +",");
+                }
+                select += this.columnDefs.get(tempSize).name;
+            }
+
+            ResultSet res = selectStatement.executeQuery(helper.selectRecord(this.TABLE_NAME, select,
                     new RecordValue(this.columnDefs.get(this.FOREIGN_KEY_COL_ID).name, templateId, this.columnDefs.get(this.FOREIGN_KEY_COL_ID).type)));
-            
+
             String[] tempResult = null;
             while (res.next()) {
                 tempResult = new String[tempSize + 1];
@@ -158,37 +196,37 @@ public class TemplateItems {
                 }
             }
         }
-        
+
         return result;
     }
-    
+
     public int updateItemsOfTemplate(Connection con, ArrayList<String[]> templateInfo) {
         Statement updateStatement = null;
         int result = 0;
-        
+
         try {
             updateStatement = con.createStatement();
             DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
-            
+
             String[] itemIds = templateInfo.get(1);
-            
+
             int tempSize = this.columnDefs.size() - 1;
             RecordValue[] setValues = new RecordValue[tempSize];
             RecordValue[] conditionValues = null;
-            
-            for (int i = 0; i < itemIds.length; i++) {                
+
+            for (int i = 0; i < itemIds.length; i++) {
                 for (int j = 0; j < tempSize; j++) {
                     setValues[j] = new RecordValue(this.columnDefs.get(j).name, templateInfo.get(2 + i)[j], this.columnDefs.get(j).type);
                 }
-                
+
                 conditionValues = new RecordValue[]{
                     new RecordValue(this.PRIMARY_KEY.name, itemIds[i], this.PRIMARY_KEY.type)
                 };
-                
+
                 if (updateStatement.executeUpdate(helper.updateRecord(TABLE_NAME, setValues, conditionValues)) > 0) {
                     result++;
-                }                
-            }          
+                }
+            }
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
@@ -200,7 +238,7 @@ public class TemplateItems {
                 }
             }
         }
-        
+
         return result;
     }
 }

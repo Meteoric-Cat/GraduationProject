@@ -201,7 +201,8 @@ public class PanelTemplatesList extends javax.swing.JPanel {
                 if (counterRowClicking == 2) {
                     counterRowClicking = 0;
                     if (tableTemplates.getSelectedRowCount() == 1) {
-                        ApplicationWindow.getInstance().getPanelMain().switchPanelForDisplayDetail(PanelMain.PANEL_ID.PANEL_DEVICE_INFO);
+                        ApplicationWindow.getInstance().getPanelMain().switchPanelForDisplayDetail(PanelMain.PANEL_ID.PANEL_TEMPLATE_INFO);
+                        //System.out.println(tableTemplates.getSelectedRow());
                         ApplicationWindow.getInstance().getPanelMain()
                                 .getPanelTemplateInfo().initViewData(PanelTemplatesList.this.templateIds.get(tableTemplates.getSelectedRow()));
                     }
@@ -220,6 +221,9 @@ public class PanelTemplatesList extends javax.swing.JPanel {
 //        this.labelDisabledValue.setText("0");
 //        this.labelEnabledValue.setText("0");
         this.labelTotalValue.setText("0");
+        if (this.templateIds != null) {
+            this.templateIds.clear();
+        }
 
         TemplateManagementController controller = new TemplateManagementController();
         ArrayList<String[]> templateList = controller.processInitTemplateList();
@@ -254,25 +258,28 @@ public class PanelTemplatesList extends javax.swing.JPanel {
     }
 
     private void updateViewData(String[] templateInfo) {
-        DefaultTableModel tableModel = (DefaultTableModel) this.tableTemplates.getModel();        
+        DefaultTableModel tableModel = (DefaultTableModel) this.tableTemplates.getModel();
         this.addRowToTable(tableModel, templateInfo);
         this.labelTotalValue.setText(String.valueOf(Integer.parseInt(this.labelTotalValue.getText()) + 1));
 
         this.revalidate();
         this.repaint();
     }
-    
+
     private void addRowToTable(DefaultTableModel tableModel, String[] templateInfo) {
         if (templateInfo.length == this.colNames.length) {
             tableModel.addRow(templateInfo);
+            System.out.println("hello world");
             return;
-        }        
-        
-        this.templateIds.add(templateInfo[0]);        
+        }
+
+        System.out.println(templateInfo[0]);
+        this.templateIds.add(templateInfo[0]);
         String[] temp = new String[this.colNames.length];
         for (int i = 0; i < this.colNames.length; i++) {
             temp[i] = templateInfo[i + 1];
         }
         tableModel.addRow(temp);
     }
+
 }
