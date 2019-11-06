@@ -26,6 +26,7 @@ public class PanelMain extends javax.swing.JPanel{
     private PanelDevicesList panelDevicesList;
     private PanelDeviceInfo panelDeviceInfo;
     private PanelTemplatesList panelTemplatesList;
+    private PanelTemplateInfo panelTemplateInfo;
     
     private javax.swing.JPanel curMainChild;
     
@@ -34,7 +35,8 @@ public class PanelMain extends javax.swing.JPanel{
         PANEL_TEMPLATES,
         PANEL_ACCOUNT_INFO,
         PANEL_SETTINGS, 
-        PANEL_DEVICE_INFO
+        PANEL_DEVICE_INFO,
+        PANEL_TEMPLATE_INFO
     }
     
     public PanelMain() {
@@ -110,6 +112,10 @@ public class PanelMain extends javax.swing.JPanel{
         panelTemplatesList = new PanelTemplatesList();
         panelTemplatesList.setVisible(false);
         panelTemplatesList.setEnabled(false);
+        
+        panelTemplateInfo = new PanelTemplateInfo();
+        panelTemplateInfo.setVisible(false);
+        panelTemplateInfo.setEnabled(false);
     }
     
     private void initListeners() {
@@ -160,6 +166,9 @@ public class PanelMain extends javax.swing.JPanel{
             case PANEL_DEVICE_INFO:
                 this.enablePanel(this.panelDeviceInfo);
                 break;
+            case PANEL_TEMPLATE_INFO:
+                this.enablePanel(this.panelTemplateInfo);
+                break;
         }
         
         this.revalidate();
@@ -179,5 +188,9 @@ public class PanelMain extends javax.swing.JPanel{
     
     public PanelDeviceInfo getPanelDeviceInfo() {
         return this.panelDeviceInfo;
+    }
+    
+    public PanelTemplateInfo getPanelTemplateInfo() {
+        return this.panelTemplateInfo;
     }
 }

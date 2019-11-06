@@ -81,8 +81,9 @@ public class TemplateManagementController {
         return false;
     }
 
-    public String[] proccessGettingTemplateInfo(String templateLabel) {
-        String[] result = DataManager.getInstance().getTemplates().getTemplateInfo(DataManager.getInstance().getDatabaseConnection(), templateLabel, null);
+    public ArrayList<String[]> proccessGettingTemplateInfo(String templateId) {
+        //String[] result = DataManager.getInstance().getTemplates().getTemplateInfo(DataManager.getInstance().getDatabaseConnection(), templateLabel, null);
+        ArrayList<String[]> result = DataManager.getInstance().getTemplates().getTemplateInfo(DataManager.getInstance().getDatabaseConnection(), templateId, null);
         ResultMessenger resultMessenger = new ResultMessenger();
 
         if (result == null) {
@@ -94,8 +95,8 @@ public class TemplateManagementController {
         return result;
     }
 
-    public boolean saveTemplateInfo(String templateLabel, String[] templateInfo) {
-        int result = DataManager.getInstance().getTemplates().updateTemplateInfo(DataManager.getInstance().getDatabaseConnection(), templateLabel, templateInfo);
+    public boolean saveTemplateInfo(String templateId, ArrayList<String[]> templateInfo) {
+        int result = DataManager.getInstance().getTemplates().updateTemplateInfo(DataManager.getInstance().getDatabaseConnection(), templateId, templateInfo);
         ResultMessenger resultMessenger = new ResultMessenger();
 
         if (result == 0) {

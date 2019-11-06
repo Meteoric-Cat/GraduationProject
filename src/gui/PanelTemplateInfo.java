@@ -5,7 +5,14 @@
  */
 package gui;
 
+import control.TemplateManagementController;
+import data.DataManager;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -32,8 +39,14 @@ public class PanelTemplateInfo extends javax.swing.JPanel {
 
     private ActionListener listenerButton;
     
+    private String currentTemplateId;
+    private ArrayList<String> itemIds;
+    
     public PanelTemplateInfo() {
         initComponents();
+        initListeners();
+        
+        this.itemIds = new ArrayList<String>();
     }
 
     private void initComponents() {
@@ -129,5 +142,71 @@ public class PanelTemplateInfo extends javax.swing.JPanel {
         labelItems.setText("Items:");
         add(labelItems);
         labelItems.setBounds(130, 370, 34, 16);
+    }
+    
+    private void initListeners() {
+        this.listenerButton = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JButton source = (JButton) e.getSource();
+                if (source == PanelTemplateInfo.this.buttonSave) {
+                    ArrayList<String[]> templateInfo = new ArrayList<String[]>();
+                    String[] temp = new String[] {
+                        tfieldName.getText(),
+                        tareaDescription.getText(),
+                        tfieldSNMPVersion.getText(),
+                        labelImportedTimeValue.getText()
+                    };
+                    
+                    templateInfo.add(temp);                    
+                    templateInfo.add((String[]) PanelTemplateInfo.this.itemIds.toArray());
+                    
+                    int tempSize = PanelTemplateInfo.this.itemIds.size();
+                    for (int i = 0; i < tempSize; i++) {
+                        temp = new String[colNames.length];
+                        for (int j = 0; j < colNames.length; j++) {
+                            temp[j] = String.valueOf(tableItems.getValueAt(i, j));
+                        }
+                        templateInfo.add(temp);
+                    }                    
+                    
+                    TemplateManagementController controller = new TemplateManagementController();
+                    if (!controller.saveTemplateInfo(currentTemplateId, templateInfo)) {
+                        JOptionPane.showMessageDialog(null, controller.getResultMessage());
+                    }
+                }
+                if (source == PanelTemplateInfo.this.buttonCancel) {
+                    PanelTemplateInfo.this.initViewData(PanelTemplateInfo.this.currentTemplateId);
+                }
+            }            
+        };
+    }
+    
+    public void initViewData(String templateId) {
+        this.currentTemplateId = templateId;
+        
+        TemplateManagementController controller = new TemplateManagementController();
+        ArrayList<String[]> result = controller.proccessGettingTemplateInfo(templateId);
+        
+        this.tfieldName.setText(result.get(0)[0]);
+        this.tareaDescription.setText(result.get(0)[1]);
+        this.tfieldSNMPVersion.setText(result.get(0)[2]);
+        this.labelImportedTimeValue.setText(result.get(0)[3]);
+        
+        this.itemIds.clear();
+        for (String temp : result.get(1)) {
+            this.itemIds.add(temp);
+        }
+        
+        DefaultTableModel tableModel = (DefaultTableModel) this.tableItems.getModel();
+        int tempSize = result.size();        
+        
+        for (int i = 2; i < tempSize; i++) {
+            this.itemIds.add(result.get(i)[0]);
+            tableModel.addRow(result.get(i));            
+        }
+        
+        this.revalidate();
+        this.repaint();
     }
 }

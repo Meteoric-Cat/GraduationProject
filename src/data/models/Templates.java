@@ -13,6 +13,8 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import other.DatabaseSyntaxHelper;
 import other.DatabaseSyntaxHelper.ColumnDefinition;
 import other.DatabaseSyntaxHelper.RecordValue;
@@ -91,7 +93,7 @@ public class Templates {
                     result[i] = values[i - 1].getValue();
                 }
                 result[0] = templateId;
-                
+
                 if (templateId != null) {
                     int itemListSize = itemList.size();
                     for (int i = 0; i < itemListSize; i++) {
@@ -148,9 +150,9 @@ public class Templates {
                 for (int i = 0; i < size; i++) {
                     temp[i] = res.getString(1 + i);
                 }
-
+                result.add(temp);
             }
-            result.add(temp);
+            //result.add(temp);
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
@@ -196,6 +198,93 @@ public class Templates {
         return result;
     }
 
+    public ArrayList<String[]> getTemplateInfo(Connection con, String templateId, String[] orders) {
+        ArrayList<String[]> result = new ArrayList<String[]>();
+        Statement selectStatement = null;
+        String select = "";
+
+        try {
+            selectStatement = con.createStatement();
+            DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
+            int size = -1;
+
+            if (orders == null) {
+                size = this.columnDefs.size() - 1;
+                for (int i = 0; i < size; i++) {
+                    select += this.columnDefs.get(i).name + ",";
+                }
+                select += this.columnDefs.get(size).name;
+            } else {
+                size = orders.length - 1;
+                for (int i = 0; i < size; i++) {
+                    select += orders[i] + ",";
+                }
+                select += orders[size];
+            }
+
+            size++;
+            String[] temp = new String[size];
+
+            ResultSet res = selectStatement.executeQuery(helper.selectRecord(this.TABLE_NAME, select,
+                    new RecordValue(this.PRIMARY_KEY.name, templateId, this.PRIMARY_KEY.type)));
+
+            if (res.next()) {
+                for (int i = 0; i < size; i++) {
+                    temp[i] = res.getString(i);
+                }
+                result.add(temp);
+            }
+            
+            result.addAll(DataManager.getInstance().getTemplateItems().getItemsOfTemplate(con, templateId));
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (selectStatement != null) {
+                try {
+                    selectStatement.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public int updateTemplateInfo(Connection con, String templateId, ArrayList<String[]> templateInfo) {
+        Statement updateStatement = null;
+        int result = -1;
+        
+        try {
+            updateStatement = con.createStatement();
+            DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
+            
+            RecordValue[] setValues = new RecordValue[this.columnDefs.size()];
+            for (int i = 0; i < this.columnDefs.size(); i++) {
+                setValues[i] = new RecordValue(this.columnDefs.get(i).name, templateInfo.get(0)[i], this.columnDefs.get(i).type);
+            }
+            
+            RecordValue[] conditionValues = {
+                new RecordValue(this.PRIMARY_KEY.name, templateId, this.PRIMARY_KEY.type)
+            };
+            
+            result = updateStatement.executeUpdate(helper.updateRecord(TABLE_NAME, setValues, conditionValues));
+            
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (updateStatement != null) {
+                try {
+                    updateStatement.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        
+        return result;
+    }
+    
     public ArrayList<ColumnDefinition> getColumnDefinitions() {
         return this.columnDefs;
     }

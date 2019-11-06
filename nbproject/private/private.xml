@@ -5,13 +5,17 @@
         <group>
             <file>file:/E:/SchoolProject/GraduationProject/src/data/DataManager.java</file>
             <file>file:/E:/SchoolProject/GraduationProject/src/gui/PanelDevicesList.java</file>
-            <file>file:/E:/SchoolProject/GraduationProject/src/other/DatabaseSyntaxHelper.java</file>
+            <file>file:/E:/SchoolProject/GraduationProject/src/gui/PanelTemplateInfo.java</file>
             <file>file:/E:/SchoolProject/GraduationProject/src/control/TemplateManagementController.java</file>
-            <file>file:/E:/SchoolProject/GraduationProject/src/gui/PanelTemplatesList.java</file>
-            <file>file:/E:/SchoolProject/GraduationProject/src/data/models/Templates.java</file>
+            <file>file:/E:/SchoolProject/GraduationProject/src/gui/PanelDeviceInfo.java</file>
+            <file>file:/E:/SchoolProject/GraduationProject/src/control/UserManagementController.java</file>
             <file>file:/E:/SchoolProject/GraduationProject/src/control/DeviceManagementController.java</file>
             <file>file:/E:/SchoolProject/GraduationProject/src/data/models/TemplateItems.java</file>
             <file>file:/E:/SchoolProject/GraduationProject/src/data/models/Devices.java</file>
+            <file>file:/E:/SchoolProject/GraduationProject/src/other/DatabaseSyntaxHelper.java</file>
+            <file>file:/E:/SchoolProject/GraduationProject/src/gui/PanelMain.java</file>
+            <file>file:/E:/SchoolProject/GraduationProject/src/gui/PanelTemplatesList.java</file>
+            <file>file:/E:/SchoolProject/GraduationProject/src/data/models/Templates.java</file>
         </group>
     </open-files>
 </project-private>

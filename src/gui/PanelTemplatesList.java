@@ -203,7 +203,7 @@ public class PanelTemplatesList extends javax.swing.JPanel {
                     if (tableTemplates.getSelectedRowCount() == 1) {
                         ApplicationWindow.getInstance().getPanelMain().switchPanelForDisplayDetail(PanelMain.PANEL_ID.PANEL_DEVICE_INFO);
                         ApplicationWindow.getInstance().getPanelMain()
-                                .getPanelTemplateInfo().initViewData(String.valueOf(PanelTemplatesList.this.templateIds.get(tableTemplates.getSelectedRow())));
+                                .getPanelTemplateInfo().initViewData(PanelTemplatesList.this.templateIds.get(tableTemplates.getSelectedRow()));
                     }
                 }
             }
