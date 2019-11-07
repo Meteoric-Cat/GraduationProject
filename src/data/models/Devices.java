@@ -33,7 +33,6 @@ public class Devices {
     private final String DEFAULT_DEVICE_STATE = DeviceState.DISABLED;
     private final String DEFAULT_LAST_ACCESS = " ";
     
-    private final int LABEL_COL_ID = 3;
     private final int STATE_COL_ID = 7;
     private final int IMPORT_COL_ID = 8;
     private final int ACCESS_COL_ID = 9;
@@ -99,11 +98,11 @@ public class Devices {
             //get the id of the inserted device
             ResultSet res = insertStatement.executeQuery(helper.selectInsertedId());
             if (res.next()) {
-                result[0] = res.getString(0);
+                result[0] = res.getString(1);
             }
             
             for (int i = 1; i < values.length; i++) {
-                result[i] = values[i].getValue();
+                result[i] = values[i - 1].getValue();
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -131,7 +130,7 @@ public class Devices {
             int size = 0;
             
             if (orders == null) {
-                select = this.PRIMARY_KEY + ",";
+                select = this.PRIMARY_KEY.name + ",";
                 size = this.columnDefs.size() - 1;
                 for (int i = 0; i < size; i++) {
                     select += this.columnDefs.get(i).name + ",";
@@ -152,7 +151,7 @@ public class Devices {
             while (res.next()) {
                 temp = new String[size];
                 for (int i = 0; i < size; i++) {
-                    if (i == STATE_COL_ID) {
+                    if (i == STATE_COL_ID + 1) {
                         temp[i] = this.denormalizeStateValue(res.getString(i + 1));
                     } else {
                         temp[i] = res.getString(1 + i);

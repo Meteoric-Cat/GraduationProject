@@ -258,7 +258,7 @@ public class PanelDevicesList extends javax.swing.JPanel {
         int disabledCount = Integer.parseInt(this.labelDisabledValue.getText());
 
         for (int i = 0; i < listSize; i++) {
-            if (deviceInfo.get(i)[STATE_COL_ID].equals(Devices.DeviceState.DISABLED)) {
+            if (deviceInfo.get(i)[STATE_COL_ID + 1].equals(Devices.DeviceState.DISABLED)) {
                 disabledCount++;
             } else {
                 enabledCount++;

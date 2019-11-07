@@ -141,7 +141,6 @@ public class Templates {
                 select += orders[size];
             }
 
-            System.out.println(select);
             ResultSet res = selectStatement.executeQuery(helper.selectRecord(this.TABLE_NAME, select, null));
             size += 2;
             String[] temp = null;
@@ -234,7 +233,7 @@ public class Templates {
 
             if (res.next()) {
                 for (int i = 0; i < size; i++) {
-                    temp[i] = res.getString(i);
+                    temp[i] = res.getString(i + 1);
                 }
                 result.add(temp);
             }

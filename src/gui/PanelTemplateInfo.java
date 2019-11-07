@@ -158,14 +158,20 @@ public class PanelTemplateInfo extends javax.swing.JPanel {
                         labelImportedTimeValue.getText()
                     };
                     
-                    templateInfo.add(temp);                    
-                    templateInfo.add((String[]) PanelTemplateInfo.this.itemIds.toArray());
+                    templateInfo.add(temp);    
+                    temp = new String[PanelTemplateInfo.this.itemIds.size()];
+                    PanelTemplateInfo.this.itemIds.toArray(temp);
+                    templateInfo.add(temp);
                     
                     int tempSize = PanelTemplateInfo.this.itemIds.size();
                     for (int i = 0; i < tempSize; i++) {
                         temp = new String[colNames.length];
                         for (int j = 0; j < colNames.length; j++) {
-                            temp[j] = String.valueOf(tableItems.getValueAt(i, j));
+                            try {temp[j] = String.valueOf(tableItems.getValueAt(i, j));
+                            
+                            } catch (Exception ex) {
+                                System.out.println(String.valueOf(i) + j);
+                            }
                         }
                         templateInfo.add(temp);
                     }                    
@@ -201,11 +207,12 @@ public class PanelTemplateInfo extends javax.swing.JPanel {
             this.itemIds.add(temp);
         }
         
-        DefaultTableModel tableModel = (DefaultTableModel) this.tableItems.getModel();
-        int tempSize = result.size();        
+        DefaultTableModel tableModel = (DefaultTableModel) this.tableItems.getModel();        
+        int tempSize = result.size();                
+        for (int i = tableModel.getRowCount() - 1; i >= 0; i--) 
+            tableModel.removeRow(i);
         
-        for (int i = 2; i < tempSize; i++) {
-            this.itemIds.add(result.get(i)[0]);
+        for (int i = 2; i < tempSize; i++) {            
             tableModel.addRow(result.get(i));            
         }
         

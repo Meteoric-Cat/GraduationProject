@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -147,7 +148,9 @@ public class TemplateItems {
             }
         }
         
-        return (String[]) result.toArray();
+        String[] temp = new String[result.size()];        
+        result.toArray(temp);
+        return temp;
     }
 
     public ArrayList<String[]> getItemsOfTemplate(Connection con, String templateId, String[] orders) {
@@ -181,7 +184,7 @@ public class TemplateItems {
             while (res.next()) {
                 tempResult = new String[tempSize + 1];
                 for (int i = 0; i <= tempSize; i++) {
-                    tempResult[i] = res.getString(i);
+                    tempResult[i] = res.getString(i + 1);
                 }
                 result.add(tempResult);
             }
