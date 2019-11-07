@@ -61,7 +61,7 @@ public class PanelDeviceInfo extends JPanel {
 
     private ActionListener listenerButton;
 
-    private String currentDeviceLabel;
+    private String currentDeviceId;
 
     public PanelDeviceInfo() {
         initComponents();
@@ -326,15 +326,14 @@ public class PanelDeviceInfo extends JPanel {
 
                 if (source == buttonSaveInfo) {
                     DeviceManagementController controller = new DeviceManagementController();
-                    if (controller.saveDeviceInfo(currentDeviceLabel,
+                    if (!controller.saveDeviceInfo(currentDeviceId,
                             PanelDeviceInfo.this.getDeviceInfoFromViews())) {
-                        PanelDeviceInfo.this.currentDeviceLabel = tfieldLabel.getText();
-                    } else {
                         JOptionPane.showMessageDialog(null, controller.getResultMessage());
                     }
+
                 }
                 if (source == buttonCancelInfo) {
-                    PanelDeviceInfo.this.initViewData(currentDeviceLabel);
+                    PanelDeviceInfo.this.initViewData(currentDeviceId);
                 }
             }
         };
@@ -343,11 +342,11 @@ public class PanelDeviceInfo extends JPanel {
         this.buttonCancelInfo.addActionListener(this.listenerButton);
     }
 
-    public void initViewData(String deviceLabel) {
-        this.currentDeviceLabel = deviceLabel;
+    public void initViewData(String deviceId) {
+        this.currentDeviceId = deviceId;
 
         DeviceManagementController controller = new DeviceManagementController();
-        String[] deviceInfo = controller.proccessGettingDeviceInfo(deviceLabel);
+        String[] deviceInfo = controller.proccessGettingDeviceInfo(deviceId);
 
         if (deviceInfo == null) {
             JOptionPane.showMessageDialog(null, controller.getResultMessage());

@@ -44,13 +44,17 @@ public class PanelDevicesList extends javax.swing.JPanel {
 
     private MouseAdapter mlistenerTable;
     private int counterRowClicking;
+    
+    private ArrayList<String> deviceIds;
 
     public PanelDevicesList() {
         initComponents();
-        initViewData();
         initListeners();
 
-        this.counterRowClicking = 0;
+        this.counterRowClicking = 0;        
+        this.deviceIds = new ArrayList<String>();
+        
+        this.initViewData();
     }
 
     private void initComponents() {
@@ -173,7 +177,7 @@ public class PanelDevicesList extends javax.swing.JPanel {
                     if (selectedRows != null) {
                         String[] selectedDevices = new String[selectedRows.length];
                         for (int i = 0; i < selectedRows.length; i++) {
-                            selectedDevices[i] = (String) tableDevices.getValueAt(selectedRows[i], LABEL_COL_ID);
+                            selectedDevices[i] = deviceIds.get(selectedRows[i]);
                         }
 
                         DeviceManagementController controller = new DeviceManagementController();
@@ -201,7 +205,7 @@ public class PanelDevicesList extends javax.swing.JPanel {
                     if (tableDevices.getSelectedRowCount() == 1) {
                         ApplicationWindow.getInstance().getPanelMain().switchPanelForDisplayDetail(PanelMain.PANEL_ID.PANEL_DEVICE_INFO);
                         ApplicationWindow.getInstance().getPanelMain()
-                                .getPanelDeviceInfo().initViewData(String.valueOf(tableDevices.getValueAt(tableDevices.getSelectedRow(), LABEL_COL_ID)));
+                                .getPanelDeviceInfo().initViewData(deviceIds.get(tableDevices.getSelectedRow()));
                     }
                 }
             }
@@ -218,6 +222,7 @@ public class PanelDevicesList extends javax.swing.JPanel {
         this.labelDisabledValue.setText("0");
         this.labelEnabledValue.setText("0");
         this.labelTotalValue.setText("0");
+        this.deviceIds.clear();
 
         DeviceManagementController controller = new DeviceManagementController();
         ArrayList<String[]> deviceList = controller.processInitDeviceList();
@@ -236,8 +241,15 @@ public class PanelDevicesList extends javax.swing.JPanel {
     private void updateViewData(ArrayList<String[]> deviceInfo) {
         int listSize = deviceInfo.size();
         DefaultTableModel tableModel = (DefaultTableModel) this.tableDevices.getModel();
+        String[] temp = null;
         for (int i = 0; i < listSize; i++) {
-            tableModel.addRow(deviceInfo.get(i));
+            this.deviceIds.add(deviceInfo.get(i)[0]);
+            
+            temp = new String[this.colNames.length];
+            for (int j = 0; j < this.colNames.length; j++) {
+                temp[j] = deviceInfo.get(i)[j + 1];
+            }
+            tableModel.addRow(temp);
         }
 
         this.labelTotalValue.setText(String.valueOf(Integer.parseInt(this.labelTotalValue.getText()) + deviceInfo.size()));

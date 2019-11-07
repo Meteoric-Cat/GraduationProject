@@ -79,8 +79,8 @@ public class DeviceManagementController {
         return false;
     }
 
-    public String[] proccessGettingDeviceInfo(String deviceLabel) {
-        String[] result = DataManager.getInstance().getDevices().getDeviceInfo(DataManager.getInstance().getDatabaseConnection(), deviceLabel, null);
+    public String[] proccessGettingDeviceInfo(String deviceId) {
+        String[] result = DataManager.getInstance().getDevices().getDeviceInfo(DataManager.getInstance().getDatabaseConnection(), deviceId, null);
         ResultMessenger resultMessenger = new ResultMessenger();
         
         if (result == null) {
@@ -91,8 +91,8 @@ public class DeviceManagementController {
         return result;
     }
     
-    public boolean saveDeviceInfo(String deviceLabel, String[] deviceInfo) {
-        int result = DataManager.getInstance().getDevices().updateDeviceInfo(DataManager.getInstance().getDatabaseConnection(), deviceLabel, deviceInfo);
+    public boolean saveDeviceInfo(String deviceId, String[] deviceInfo) {
+        int result = DataManager.getInstance().getDevices().updateDeviceInfo(DataManager.getInstance().getDatabaseConnection(), deviceId, deviceInfo);
         ResultMessenger resultMessenger = new ResultMessenger();
         
         if (result == 0) {

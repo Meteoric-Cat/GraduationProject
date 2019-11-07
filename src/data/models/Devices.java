@@ -26,7 +26,8 @@ import other.DatabaseSyntaxHelper.RecordValue;
 public class Devices {
     
     private final String tableName = "Devices";
-    private final String primaryKey = "id";
+    //private final String primaryKey = "id";
+    private final ColumnDefinition PRIMARY_KEY = new ColumnDefinition("id", DataType.NUMERIC_TYPE);
     private ArrayList<ColumnDefinition> columnDefs;
     
     private final String DEFAULT_DEVICE_STATE = DeviceState.DISABLED;
@@ -56,7 +57,7 @@ public class Devices {
         try {
             creationStatement = con.createStatement();
             DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
-            creationStatement.executeUpdate(helper.createTable(tableName, columnDefs, primaryKey, null));
+            creationStatement.executeUpdate(helper.createTable(tableName, columnDefs, this.PRIMARY_KEY.name, null));
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
@@ -93,9 +94,15 @@ public class Devices {
             insertStatement.executeUpdate(helper.insertRecord(tableName, values));
             
             values[STATE_COL_ID].setValue(this.denormalizeStateValue(values[STATE_COL_ID].getValue()));
-            result = new String[values.length];
+            result = new String[values.length + 1];
             
-            for (int i = 0; i < values.length; i++) {
+            //get the id of the inserted device
+            ResultSet res = insertStatement.executeQuery(helper.selectInsertedId());
+            if (res.next()) {
+                result[0] = res.getString(0);
+            }
+            
+            for (int i = 1; i < values.length; i++) {
                 result[i] = values[i].getValue();
             }
         } catch (SQLException ex) {
@@ -124,6 +131,7 @@ public class Devices {
             int size = 0;
             
             if (orders == null) {
+                select = this.PRIMARY_KEY + ",";
                 size = this.columnDefs.size() - 1;
                 for (int i = 0; i < size; i++) {
                     select += this.columnDefs.get(i).name + ",";
@@ -138,7 +146,7 @@ public class Devices {
             }
             
             ResultSet res = selectStatement.executeQuery(helper.selectRecord(tableName, select, null));
-            size++;
+            size += 2;
             String[] temp = null;
             
             while (res.next()) {
@@ -168,7 +176,7 @@ public class Devices {
         return result;
     }
     
-    public String[] getDeviceInfo(Connection con, String label, String[] orders) {
+    public String[] getDeviceInfo(Connection con, String id, String[] orders) {
         Statement selectStatement = null;
         String[] result = null;
         String select = "";
@@ -193,7 +201,7 @@ public class Devices {
             }
             
             ResultSet res = selectStatement.executeQuery(helper.selectRecord(tableName, select,
-                    new RecordValue(this.columnDefs.get(LABEL_COL_ID).name, label, this.columnDefs.get(LABEL_COL_ID).type)));
+                    new RecordValue(this.PRIMARY_KEY.name, id, this.PRIMARY_KEY.type)));
             size++;
             result = new String[size];
             
@@ -222,7 +230,7 @@ public class Devices {
         return result;        
     }
     
-    public int updateDeviceInfo(Connection con, String deviceLabel, String[] info) {
+    public int updateDeviceInfo(Connection con, String deviceId, String[] info) {
         Statement updateStatement = null;
         int result = 0;       
         
@@ -238,7 +246,7 @@ public class Devices {
             }
             
             RecordValue[] conditionValues = {
-                new RecordValue(this.columnDefs.get(LABEL_COL_ID).name, deviceLabel, this.columnDefs.get(LABEL_COL_ID).type)
+                new RecordValue(this.PRIMARY_KEY.name, deviceId, this.PRIMARY_KEY.type)
             };
             
             result = updateStatement.executeUpdate(helper.updateRecord(tableName, setValues, conditionValues));            
@@ -267,7 +275,7 @@ public class Devices {
             
             RecordValue[] conditionValues = new RecordValue[devices.length];
             for (int i = 0; i < devices.length; i++) {
-                conditionValues[i] = new RecordValue(this.columnDefs.get(LABEL_COL_ID).name, devices[i], this.columnDefs.get(LABEL_COL_ID).type);
+                conditionValues[i] = new RecordValue(this.PRIMARY_KEY.name, devices[i], this.PRIMARY_KEY.type);
             }            
             
             result = deleteStatement.executeUpdate( helper.deleteRecord(tableName, conditionValues));

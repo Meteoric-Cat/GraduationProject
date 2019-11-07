@@ -49,11 +49,12 @@ public class PanelTemplatesList extends javax.swing.JPanel {
 
     public PanelTemplatesList() {
         initComponents();
-        initViewData();
         initListeners();
 
         this.counterRowClicking = 0;
         this.templateIds = new ArrayList<String>();
+        
+        this.initViewData();
     }
 
     private void initComponents() {
@@ -221,9 +222,7 @@ public class PanelTemplatesList extends javax.swing.JPanel {
 //        this.labelDisabledValue.setText("0");
 //        this.labelEnabledValue.setText("0");
         this.labelTotalValue.setText("0");
-        if (this.templateIds != null) {
-            this.templateIds.clear();
-        }
+        this.templateIds.clear();
 
         TemplateManagementController controller = new TemplateManagementController();
         ArrayList<String[]> templateList = controller.processInitTemplateList();
@@ -268,12 +267,10 @@ public class PanelTemplatesList extends javax.swing.JPanel {
 
     private void addRowToTable(DefaultTableModel tableModel, String[] templateInfo) {
         if (templateInfo.length == this.colNames.length) {
-            tableModel.addRow(templateInfo);
-            System.out.println("hello world");
+            tableModel.addRow(templateInfo);            
             return;
         }
 
-        System.out.println(templateInfo[0]);
         this.templateIds.add(templateInfo[0]);
         String[] temp = new String[this.colNames.length];
         for (int i = 0; i < this.colNames.length; i++) {
