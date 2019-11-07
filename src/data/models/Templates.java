@@ -143,7 +143,7 @@ public class Templates {
 
             System.out.println(select);
             ResultSet res = selectStatement.executeQuery(helper.selectRecord(this.TABLE_NAME, select, null));
-            size++;
+            size += 2;
             String[] temp = null;
 
             while (res.next()) {
@@ -200,6 +200,7 @@ public class Templates {
     }
 
     public ArrayList<String[]> getTemplateInfo(Connection con, String templateId, String[] orders) {
+        //this method only return the data of a template without its id
         ArrayList<String[]> result = new ArrayList<String[]>();
         Statement selectStatement = null;
         String select = "";
@@ -209,7 +210,7 @@ public class Templates {
             DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
             int size = -1;
 
-            if (orders == null) {
+            if (orders == null) { 
                 size = this.columnDefs.size() - 1;
                 for (int i = 0; i < size; i++) {
                     select += this.columnDefs.get(i).name + ",";
