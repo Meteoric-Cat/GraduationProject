@@ -225,7 +225,7 @@ public class PanelTemplatesList extends javax.swing.JPanel {
         this.templateIds.clear();
 
         TemplateManagementController controller = new TemplateManagementController();
-        ArrayList<String[]> templateList = controller.processInitTemplateList();
+        ArrayList<String[]> templateList = controller.processInitTemplateList(null);
 
         this.updateViewData(templateList);
     }

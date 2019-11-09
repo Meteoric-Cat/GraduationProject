@@ -58,10 +58,13 @@ public class PanelDeviceInfo extends JPanel {
     private JTextField tfieldLabel;
     private JTextField tfieldName;
     private JTextField tfieldSNMPVersion;
+    
+    private DialogAddTemplates dialogAddTemplates;
 
     private ActionListener listenerButton;
 
-    private String currentDeviceId;
+    private String currentDeviceId;    
+    
 
     public PanelDeviceInfo() {
         initComponents();
@@ -273,7 +276,7 @@ public class PanelDeviceInfo extends JPanel {
 
         listTemplates.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         listTemplates.setModel(new AbstractListModel<String>() {
-            String[] strings = {"Item 1", "Item 2", "Item 3", "Item 4", "Item 5"};
+            String[] strings = {};
 
             public int getSize() {
                 return strings.length;
@@ -316,6 +319,10 @@ public class PanelDeviceInfo extends JPanel {
         buttonMonitor.setPreferredSize(new java.awt.Dimension(100, 40));
         add(buttonMonitor);
         buttonMonitor.setBounds(880, 680, 100, 40);
+        
+        this.dialogAddTemplates = new DialogAddTemplates(null, "Templates");
+        this.dialogAddTemplates.setVisible(false);
+        this.dialogAddTemplates.setEnabled(false);
     }
 
     private void initListeners() {
@@ -335,11 +342,19 @@ public class PanelDeviceInfo extends JPanel {
                 if (source == buttonCancelInfo) {
                     PanelDeviceInfo.this.initViewData(currentDeviceId);
                 }
+                
+                if (source == buttonAddTemplates) {
+                    dialogAddTemplates.initTemplateList();
+                    dialogAddTemplates.setEnabled(true);
+                    dialogAddTemplates.setVisible(true);
+                }
             }
         };
 
         this.buttonSaveInfo.addActionListener(this.listenerButton);
         this.buttonCancelInfo.addActionListener(this.listenerButton);
+        this.buttonAddTemplates.addActionListener(this.listenerButton);
+        this.buttonCancelTemplates.addActionListener(this.listenerButton);
     }
 
     public void initViewData(String deviceId) {

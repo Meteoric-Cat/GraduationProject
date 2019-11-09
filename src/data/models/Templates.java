@@ -292,5 +292,13 @@ public class Templates {
     public ArrayList<ColumnDefinition> getColumnDefinitions() {
         return this.columnDefs;
     }
+    
+    public ColumnDefinition getPrimaryKey() {
+        return this.PRIMARY_KEY;
+    }
+    
+    public ColumnDefinition getNameColumn() {
+        return this.columnDefs.get(NAME_COL_ID);
+    }
 
 }

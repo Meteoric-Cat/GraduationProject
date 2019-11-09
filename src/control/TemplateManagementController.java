@@ -64,8 +64,8 @@ public class TemplateManagementController {
         return result;
     }
 
-    public ArrayList<String[]> processInitTemplateList() {
-        return DataManager.getInstance().getTemplates().getTemplateList(DataManager.getInstance().getDatabaseConnection(), null);
+    public ArrayList<String[]> processInitTemplateList(String[] orders) {
+        return DataManager.getInstance().getTemplates().getTemplateList(DataManager.getInstance().getDatabaseConnection(), orders);
     }
 
     public boolean processTemplatesDeletion(String[] templateIds) {
