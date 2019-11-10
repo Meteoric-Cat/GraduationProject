@@ -94,7 +94,7 @@ public class DatabaseSyntaxHelper {
     public String selectInsertedId() {
         return this.selectRecord(null, "LAST_INSERT_ID()", null);
     }
-    
+
     public String updateRecord(String tableName, RecordValue[] setValues, RecordValue[] conditionValues) {
         StringBuilder builder = new StringBuilder();
         builder.append("UPDATE ");
@@ -119,8 +119,8 @@ public class DatabaseSyntaxHelper {
 
         return builder.toString();
     }
-    
-    public String deleteRecord(String tableName, RecordValue[] conditionValues) {
+
+    public String deleteRecord(String tableName, RecordValue[] conditionValues, boolean useOr) {
         StringBuilder builder = new StringBuilder();
         builder.append("DELETE FROM ");
         builder.append(tableName);
@@ -128,10 +128,14 @@ public class DatabaseSyntaxHelper {
 
         for (int i = 0; i < conditionValues.length - 1; i++) {
             builder.append(conditionValues[i].toEquationString());
-            builder.append(" OR ");
+            if (useOr) {
+                builder.append(" OR ");
+            } else {
+                builder.append(" AND ");
+            }
         }
         builder.append(conditionValues[conditionValues.length - 1].toEquationString());
-        
+
         return builder.toString();
     }
 
@@ -172,7 +176,7 @@ public class DatabaseSyntaxHelper {
         public String getName() {
             return this.columnDef.name;
         }
-        
+
         public void setValue(String value) {
             this.value = value;
         }

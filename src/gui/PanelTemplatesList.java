@@ -38,7 +38,7 @@ public class PanelTemplatesList extends javax.swing.JPanel {
     private javax.swing.JTable tableTemplates;
 
     private javax.swing.JPopupMenu popupMenu;
-    private javax.swing.JMenuItem mitemCheck;
+//    private javax.swing.JMenuItem mitemCheck;
     private javax.swing.JMenuItem mitemDelete;
 
     private java.awt.event.ActionListener listenerButton;
@@ -138,10 +138,10 @@ public class PanelTemplatesList extends javax.swing.JPanel {
 
     private void initMenus() {
         this.popupMenu = new javax.swing.JPopupMenu();
-        this.mitemCheck = new javax.swing.JMenuItem("Check");
+//        this.mitemCheck = new javax.swing.JMenuItem("Check");
         this.mitemDelete = new javax.swing.JMenuItem("Delete");
 
-        this.popupMenu.add(mitemCheck);
+//        this.popupMenu.add(mitemCheck);
         this.popupMenu.add(mitemDelete);
 
         this.tableTemplates.setComponentPopupMenu(this.popupMenu);
@@ -186,12 +186,11 @@ public class PanelTemplatesList extends javax.swing.JPanel {
                         JOptionPane.showMessageDialog(null, controller.getResultMessage());
                     }
                 }
-                if (source == mitemCheck) {
-
-                }
+//                if (source == mitemCheck) {
+//                }
             }
         };
-        this.mitemCheck.addActionListener(listenerMenuItem);
+//        this.mitemCheck.addActionListener(listenerMenuItem);
         this.mitemDelete.addActionListener(listenerMenuItem);
 
         this.mlistenerTable = new MouseAdapter() {

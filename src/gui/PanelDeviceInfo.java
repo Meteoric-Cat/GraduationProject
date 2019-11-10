@@ -17,8 +17,10 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -60,18 +62,22 @@ public class PanelDeviceInfo extends JPanel {
     private JTextField tfieldLabel;
     private JTextField tfieldName;
     private JTextField tfieldSNMPVersion;
-    
+
+    private JPopupMenu pmenuTemplates;
+    private JMenuItem mitemDelete;
+
     private DialogAddTemplates dialogAddTemplates;
 
     private ActionListener listenerButton;
+    private ActionListener listenerMenuItem;
 
-    private String currentDeviceId;    
+    private String currentDeviceId;
     private ArrayList<String> addedTemplateIds;
 
     public PanelDeviceInfo() {
         initComponents();
         initListeners();
-        
+
         this.addedTemplateIds = new ArrayList<String>();
     }
 
@@ -315,10 +321,21 @@ public class PanelDeviceInfo extends JPanel {
         buttonMonitor.setPreferredSize(new java.awt.Dimension(100, 40));
         add(buttonMonitor);
         buttonMonitor.setBounds(880, 680, 100, 40);
-        
+
         this.dialogAddTemplates = new DialogAddTemplates(null, "Templates");
         this.dialogAddTemplates.setVisible(false);
         this.dialogAddTemplates.setEnabled(false);
+
+        initMenus();
+    }
+
+    private void initMenus() {
+        this.pmenuTemplates = new JPopupMenu();
+
+        this.mitemDelete = new JMenuItem("Delete");
+        this.pmenuTemplates.add(this.mitemDelete);
+
+        this.listTemplates.setComponentPopupMenu(this.pmenuTemplates);
     }
 
     private void initListeners() {
@@ -338,7 +355,7 @@ public class PanelDeviceInfo extends JPanel {
                 if (source == buttonCancelInfo) {
                     PanelDeviceInfo.this.initViewData(currentDeviceId);
                 }
-                
+
                 if (source == buttonAddTemplates) {
                     dialogAddTemplates.initTemplateList(PanelDeviceInfo.this.addedTemplateIds);
                     dialogAddTemplates.setEnabled(true);
@@ -351,6 +368,32 @@ public class PanelDeviceInfo extends JPanel {
         this.buttonCancelInfo.addActionListener(this.listenerButton);
         this.buttonAddTemplates.addActionListener(this.listenerButton);
         this.buttonCancelTemplates.addActionListener(this.listenerButton);
+
+        this.listenerMenuItem = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JMenuItem source = (JMenuItem) e.getSource();
+
+                if (source == mitemDelete) {
+                    DeviceManagementController controller = new DeviceManagementController();
+
+                    int[] selectedIndices = listTemplates.getSelectedIndices();
+                    String[] selectedTemplateIds = new String[selectedIndices.length];
+                    for (int i = 0; i < selectedIndices.length; i++) {
+                        selectedTemplateIds[i] = addedTemplateIds.get(selectedIndices[i]);
+                    }
+
+                    if (!controller.proccessDeletingAddedTemplates(currentDeviceId, selectedTemplateIds)) {
+                        JOptionPane.showConfirmDialog(null, controller.getResultMessage());
+                    } 
+                    
+                    PanelDeviceInfo.this.initListTemplates();
+                }
+            }
+
+        };
+
+        this.mitemDelete.addActionListener(this.listenerMenuItem);
     }
 
     public void initViewData(String deviceId) {
@@ -381,23 +424,23 @@ public class PanelDeviceInfo extends JPanel {
             this.labelLastAccessValue.setText(deviceInfo[9]);
 
             this.initListTemplates();
-            
+
             this.revalidate();
             this.repaint();
         }
 
     }
-    
+
     public void initListTemplates() {
         this.addedTemplateIds.clear();
         DefaultListModel listTemplatesModel = (DefaultListModel) this.listTemplates.getModel();
         listTemplatesModel.clear();
-        
+
         DeviceManagementController controller = new DeviceManagementController();
         ArrayList<String[]> templatesInfo = controller.proccessGettingAddedTemplates(currentDeviceId);
-        int tempSize = templatesInfo.size();        
-        
-        for (int i = 0; i < tempSize; i++) {            
+        int tempSize = templatesInfo.size();
+
+        for (int i = 0; i < tempSize; i++) {
             addedTemplateIds.add(templatesInfo.get(i)[0]);
             listTemplatesModel.addElement(templatesInfo.get(i)[1]);
         }
@@ -414,7 +457,7 @@ public class PanelDeviceInfo extends JPanel {
         result[6] = this.tfieldCommunity.getText();
         return result;
     }
-    
+
     public String getCurrentDeviceId() {
         return this.currentDeviceId;
     }

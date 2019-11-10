@@ -23,7 +23,7 @@ public class PanelDevicesList extends javax.swing.JPanel {
 
     private String[] colNames = {"Name", "Type", "Description", "Label", "SNMP Version", "IP Address", "Community", "State", "Imported Date", "Last Access"};
     private final int STATE_COL_ID = 7;
-    private final int LABEL_COL_ID = 3;
+    //private final int LABEL_COL_ID = 3;
 
     private javax.swing.JButton buttonImport;
     private javax.swing.JLabel labelDisabled;

@@ -5,6 +5,7 @@
  */
 package data.models;
 
+import data.DataManager;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -276,9 +277,10 @@ public class Devices {
             RecordValue[] conditionValues = new RecordValue[devices.length];
             for (int i = 0; i < devices.length; i++) {
                 conditionValues[i] = new RecordValue(this.PRIMARY_KEY.name, devices[i], this.PRIMARY_KEY.type);
-            }            
+                DataManager.getInstance().getDevicesAndTemplates().deleteRelationship(con, devices[i], null);
+            }                        
             
-            result = deleteStatement.executeUpdate( helper.deleteRecord(tableName, conditionValues));
+            result = deleteStatement.executeUpdate( helper.deleteRecord(tableName, conditionValues, true));
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {

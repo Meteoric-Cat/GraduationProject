@@ -110,7 +110,7 @@ public class DeviceManagementController {
         ResultMessenger resultMessenger = new ResultMessenger();
 
         for (String templateId : templateIds) {
-            if (!DataManager.getInstance().getDevicesAndTemplates().addDeviceAndTemplate(DataManager.getInstance().getDatabaseConnection(), deviceId, templateId)) {
+            if (!DataManager.getInstance().getDevicesAndTemplates().addRelationship(DataManager.getInstance().getDatabaseConnection(), deviceId, templateId)) {
                 this.resultMessage = resultMessenger.SETTING_RELATIONSHIP_QUERY_FAILED;
                 result = false;
             }
@@ -123,7 +123,7 @@ public class DeviceManagementController {
     }
     
     public ArrayList<String[]> proccessGettingAddedTemplates(String deviceId) {
-        ArrayList<String> addedTemplateIds = DataManager.getInstance().getDevicesAndTemplates().getAddedTemplateIds(DataManager.getInstance().getDatabaseConnection(), deviceId);
+        ArrayList<String> addedTemplateIds = DataManager.getInstance().getDevicesAndTemplates().getAddedTemplateIdsOfDevice(DataManager.getInstance().getDatabaseConnection(), deviceId);
         ArrayList<String[]> result = new ArrayList<String[]>();
         
         String[] orders = new String[] {
@@ -143,6 +143,19 @@ public class DeviceManagementController {
         return result;
     }
     
+    public boolean proccessDeletingAddedTemplates(String deviceId, String[] templateIds) {
+        boolean result = true;
+        ResultMessenger resultMessenger = new ResultMessenger();
+        
+        for (String templateId : templateIds) {
+            if (DataManager.getInstance().getDevicesAndTemplates().deleteRelationship(DataManager.getInstance().getDatabaseConnection(), deviceId, templateId) < 0) {
+                result = false;
+                this.resultMessage = resultMessenger.DELETING_RELATIONSHIP_QUERY_FAILED;
+            }
+        } 
+        
+        return result;
+    }
 
     public String getResultMessage() {
         return this.resultMessage;
@@ -169,9 +182,11 @@ public class DeviceManagementController {
         public final String SETTING_FAILED = "Some errors happened when updating device info";
         public final String SETTING_SUCCESS = "Device info was updated successfully";
 
-        public final String SETTING_RELATIONSHIP_QUERY_FAILED = "Some errors happend when saving device-templates relationship to database";
+        public final String SETTING_RELATIONSHIP_QUERY_FAILED = "Some errors happened when saving device-templates relationship to database";
         public final String SETTING_RELATIONSHIP_SUCCESS = "Adding templates to this device was successfull";
         
-        public final String GETTING_TEMPLATES_FAILED = "Some errors happend when getting added template information";
+        public final String GETTING_TEMPLATES_FAILED = "Some errors happened when getting added template information";
+        
+        public final String DELETING_RELATIONSHIP_QUERY_FAILED = "Some errors happend when deleting device-templates relationship in database";
     }
 }

@@ -29,12 +29,12 @@ public class DevicesAndTemplates {
     private final String TABLE_NAME = "Devices_and_templates";
     private final ColumnDefinition PRIMARY_KEY = new ColumnDefinition("id", DataType.NUMERIC_TYPE);
     private ArrayList<ColumnDefinition> columnDefs;
-    
+
     private final int DEVICE_COL_ID = 0;
     private final int TEMPLATE_COL_ID = 1;
     private final int DATE_COL_ID = 2;
 
-    private HashMap<String, String> foreignKeys;    
+    private HashMap<String, String> foreignKeys;
 
     public DevicesAndTemplates() {
         this.columnDefs = new ArrayList<ColumnDefinition>();
@@ -66,23 +66,23 @@ public class DevicesAndTemplates {
             }
         }
     }
-    
-    public boolean addDeviceAndTemplate(Connection con, String deviceId, String templateId) {
+
+    public boolean addRelationship(Connection con, String deviceId, String templateId) {
         Statement insertStatement = null;
         boolean result = false;
-        
+
         try {
             insertStatement = con.createStatement();
             DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
-            
+
             RecordValue[] values = new RecordValue[this.columnDefs.size()];
             values[DEVICE_COL_ID] = new RecordValue(this.columnDefs.get(DEVICE_COL_ID).name, deviceId, this.columnDefs.get(DEVICE_COL_ID).type);
             values[TEMPLATE_COL_ID] = new RecordValue(this.columnDefs.get(TEMPLATE_COL_ID).name, templateId, this.columnDefs.get(TEMPLATE_COL_ID).type);
             SimpleDateFormat dateFormatter = new SimpleDateFormat(DatabaseSyntaxHelper.DataFormat.DATE_FORMAT);
             values[DATE_COL_ID] = new RecordValue(this.columnDefs.get(DATE_COL_ID).name, dateFormatter.format(new Date()), this.columnDefs.get(DATE_COL_ID).type);
-            
+
             insertStatement.executeUpdate(helper.insertRecord(TABLE_NAME, values));
-            result = true;                        
+            result = true;
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
@@ -94,23 +94,22 @@ public class DevicesAndTemplates {
                 }
             }
         }
-        
+
         return result;
     }
 
-    
-    public ArrayList<String> getAddedTemplateIds(Connection con, String deviceId) {
+    public ArrayList<String> getAddedTemplateIdsOfDevice(Connection con, String deviceId) {
         ArrayList<String> result = new ArrayList<String>();
         Statement selectStatement = null;
-        
+
         try {
             selectStatement = con.createStatement();
             DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
-            
+
             ResultSet res = selectStatement.executeQuery(
-            helper.selectRecord(TABLE_NAME, this.columnDefs.get(TEMPLATE_COL_ID).name, 
-                    new RecordValue(this.columnDefs.get(DEVICE_COL_ID).name, deviceId, this.columnDefs.get(DEVICE_COL_ID).type)));
-            
+                    helper.selectRecord(TABLE_NAME, this.columnDefs.get(TEMPLATE_COL_ID).name,
+                            new RecordValue(this.columnDefs.get(DEVICE_COL_ID).name, deviceId, this.columnDefs.get(DEVICE_COL_ID).type)));
+
             while (res.next()) {
                 result.add(res.getString(1));
             }
@@ -125,7 +124,47 @@ public class DevicesAndTemplates {
                 }
             }
         }
-        
+
+        return result;
+    }
+
+    public int deleteRelationship(Connection con, String deviceId, String templateId) {
+        Statement deletionStatement = null;
+        int result = -1;
+
+        try {
+            deletionStatement = con.createStatement();
+            DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
+
+            RecordValue[] conditionValues = null;
+            if (deviceId == null) {
+                conditionValues = new RecordValue[]{
+                    new RecordValue(this.columnDefs.get(TEMPLATE_COL_ID).name, templateId, this.columnDefs.get(TEMPLATE_COL_ID).type)
+                };
+            } else if (templateId == null) {
+                conditionValues = new RecordValue[]{
+                    new RecordValue(this.columnDefs.get(DEVICE_COL_ID).name, deviceId, this.columnDefs.get(DEVICE_COL_ID).type)
+                };
+            } else {
+                conditionValues = new RecordValue[]{
+                    new RecordValue(this.columnDefs.get(DEVICE_COL_ID).name, deviceId, this.columnDefs.get(DEVICE_COL_ID).type),
+                    new RecordValue(this.columnDefs.get(TEMPLATE_COL_ID).name, templateId, this.columnDefs.get(TEMPLATE_COL_ID).type)
+                };
+            }
+
+            result = deletionStatement.executeUpdate(helper.deleteRecord(TABLE_NAME, conditionValues, false));
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (deletionStatement != null) {
+                try {
+                    deletionStatement.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+
         return result;
     }
 }

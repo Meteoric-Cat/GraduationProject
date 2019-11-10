@@ -181,9 +181,10 @@ public class Templates {
             for (int i = 0; i < templates.length; i++) {
                 templateConditionValues[i] = new RecordValue(this.PRIMARY_KEY.name, templates[i], this.PRIMARY_KEY.type);
                 DataManager.getInstance().getTemplateItems().deleteItemsOfTemplate(con, templates[i]);
+                DataManager.getInstance().getDevicesAndTemplates().deleteRelationship(con, null, templates[i]);
             }
 
-            result = deleteStatement.executeUpdate(helper.deleteRecord(this.TABLE_NAME, templateConditionValues));
+            result = deleteStatement.executeUpdate(helper.deleteRecord(this.TABLE_NAME, templateConditionValues, true));
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {

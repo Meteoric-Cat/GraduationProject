@@ -106,7 +106,7 @@ public class TemplateItems {
                 new RecordValue(this.columnDefs.get(this.FOREIGN_KEY_COL_ID).name, templateId, this.columnDefs.get(this.FOREIGN_KEY_COL_ID).type)
             };
 
-            result = deletionStatement.executeUpdate(helper.deleteRecord(TABLE_NAME, conditionValues));
+            result = deletionStatement.executeUpdate(helper.deleteRecord(TABLE_NAME, conditionValues, true));
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
