@@ -5,10 +5,16 @@
  */
 package gui;
 
+import control.DeviceManagementController;
 import control.TemplateManagementController;
 import data.DataManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -20,10 +26,17 @@ public class DialogAddTemplates extends JDialog {
     private javax.swing.JButton buttonCancel;
     private javax.swing.JList<String> listTemplates;
     private javax.swing.JScrollPane scrollpaneTemplates;
-    
+
+    private ActionListener listenerButton;
+
+    private ArrayList<String> templateIds;
+
     public DialogAddTemplates(java.awt.Frame parent, String title) {
         super(parent, title);
         initComponents();
+        initListeners();
+        
+        this.templateIds = new ArrayList<String>();
     }
 
     private void initComponents() {
@@ -39,21 +52,13 @@ public class DialogAddTemplates extends JDialog {
         getContentPane().setLayout(null);
 
         listTemplates.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        listTemplates.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = {};
-
-            public int getSize() {
-                return strings.length;
-            }
-
-            public String getElementAt(int i) {
-                return strings[i];
-            }
-        });
+        DefaultListModel<String> model = new DefaultListModel<String>();
+        model.clear();
+        listTemplates.setModel(model);
         listTemplates.setLayoutOrientation(javax.swing.JList.VERTICAL_WRAP);
-        listTemplates.setMaximumSize(new java.awt.Dimension(52, 400));
-        listTemplates.setMinimumSize(new java.awt.Dimension(52, 400));
-        listTemplates.setPreferredSize(new java.awt.Dimension(52, 400));
+        listTemplates.setMaximumSize(new java.awt.Dimension(372, 600));
+        listTemplates.setMinimumSize(new java.awt.Dimension(372, 600));
+        listTemplates.setPreferredSize(new java.awt.Dimension(372, 600));
         scrollpaneTemplates.setViewportView(listTemplates);
 
         getContentPane().add(scrollpaneTemplates);
@@ -78,13 +83,64 @@ public class DialogAddTemplates extends JDialog {
         pack();
     }// </editor-fold>                        
 
-    public void initTemplateList() {
+    public void initTemplateList(ArrayList<String> addedTemplateIds) {
         TemplateManagementController controller = new TemplateManagementController();
         ArrayList<String[]> templatesInfo = controller.processInitTemplateList(new String[]{
             DataManager.getInstance().getTemplates().getPrimaryKey().name,
             DataManager.getInstance().getTemplates().getNameColumn().name}
         );
+
+        //if (addedTemplateIds.size() > 0) {
+        int listSize1 = addedTemplateIds.size();
+        int listSize2 = templatesInfo.size();
+
+        DefaultListModel<String> model = (DefaultListModel) this.listTemplates.getModel();
+        model.clear();        
+        this.templateIds.clear();
+
+        for (int i = 0; i < listSize2; i++) {
+            if (addedTemplateIds.indexOf(templatesInfo.get(i)[0]) == -1) {
+                this.templateIds.add(templatesInfo.get(i)[0]);
+                model.addElement(templatesInfo.get(i)[1]);
+            }
+        }
+        //}
+
+    }
+
+    private void initListeners() {
+        this.listenerButton = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JButton source = (JButton) e.getSource();
+
+                if (source == buttonAdd) {
+                    DeviceManagementController controller = new DeviceManagementController();
+
+                    int[] selectedIndices = listTemplates.getSelectedIndices();
+                    String[] selectedTemplateIds = new String[selectedIndices.length];
+                    for (int i = 0; i < selectedIndices.length; i++) {
+                        selectedTemplateIds[i] = templateIds.get(selectedIndices[i]);
+                    }
+
+                    if (controller.proccessAddingTemplatesToDevice(
+                            ApplicationWindow.getInstance().getPanelMain().getPanelDeviceInfo().getCurrentDeviceId(), selectedTemplateIds)) {
+                        ApplicationWindow.getInstance().getPanelMain().getPanelDeviceInfo().initListTemplates();
+                        DialogAddTemplates.this.setVisible(false);
+                        DialogAddTemplates.this.setEnabled(false);
+                    } else {
+                        JOptionPane.showMessageDialog(null, controller.getResultMessage());
+                    }
+                }
+                if (source == buttonCancel) {
+                    DialogAddTemplates.this.setVisible(false);
+                    DialogAddTemplates.this.setEnabled(false);
+                }
+            }
+
+        };
         
-        
+        this.buttonAdd.addActionListener(this.listenerButton);
+        this.buttonCancel.addActionListener(this.listenerButton);
     }
 }

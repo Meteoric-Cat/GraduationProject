@@ -136,16 +136,17 @@ public class Devices {
                     select += this.columnDefs.get(i).name + ",";
                 }
                 select += this.columnDefs.get(size).name;
+                size += 2;
             } else {
                 size = orders.length - 1;
                 for (int i = 0; i < size; i++) {
                     select += orders[i] + ",";
                 }
                 select += orders[size];
+                size ++;
             }
             
-            ResultSet res = selectStatement.executeQuery(helper.selectRecord(tableName, select, null));
-            size += 2;
+            ResultSet res = selectStatement.executeQuery(helper.selectRecord(tableName, select, null));            
             String[] temp = null;
             
             while (res.next()) {

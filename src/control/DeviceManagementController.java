@@ -74,7 +74,7 @@ public class DeviceManagementController {
             this.resultMessage = resultMessenger.SUCCESS;
             return true;
         }
-        
+
         this.resultMessage = resultMessenger.FAILED;
         return false;
     }
@@ -82,28 +82,68 @@ public class DeviceManagementController {
     public String[] proccessGettingDeviceInfo(String deviceId) {
         String[] result = DataManager.getInstance().getDevices().getDeviceInfo(DataManager.getInstance().getDatabaseConnection(), deviceId, null);
         ResultMessenger resultMessenger = new ResultMessenger();
-        
+
         if (result == null) {
             this.resultMessage = resultMessenger.GETTING_FAILED;
-        } else 
-            this.resultMessage = resultMessenger.GETTING_SUCCESS;        
-        
+        } else {
+            this.resultMessage = resultMessenger.GETTING_SUCCESS;
+        }
+
         return result;
     }
-    
+
     public boolean saveDeviceInfo(String deviceId, String[] deviceInfo) {
         int result = DataManager.getInstance().getDevices().updateDeviceInfo(DataManager.getInstance().getDatabaseConnection(), deviceId, deviceInfo);
         ResultMessenger resultMessenger = new ResultMessenger();
-        
+
         if (result == 0) {
             this.resultMessage = resultMessenger.SETTING_FAILED;
             return false;
         }
-        
+
         this.resultMessage = resultMessenger.SETTING_SUCCESS;
         return true;
-    }    
+    }
+
+    public boolean proccessAddingTemplatesToDevice(String deviceId, String[] templateIds) {
+        boolean result = true;
+        ResultMessenger resultMessenger = new ResultMessenger();
+
+        for (String templateId : templateIds) {
+            if (!DataManager.getInstance().getDevicesAndTemplates().addDeviceAndTemplate(DataManager.getInstance().getDatabaseConnection(), deviceId, templateId)) {
+                this.resultMessage = resultMessenger.SETTING_RELATIONSHIP_QUERY_FAILED;
+                result = false;
+            }
+        }
+        if (result) {
+            this.resultMessage = resultMessenger.SETTING_RELATIONSHIP_SUCCESS;
+        }
+        
+        return result;
+    }
     
+    public ArrayList<String[]> proccessGettingAddedTemplates(String deviceId) {
+        ArrayList<String> addedTemplateIds = DataManager.getInstance().getDevicesAndTemplates().getAddedTemplateIds(DataManager.getInstance().getDatabaseConnection(), deviceId);
+        ArrayList<String[]> result = new ArrayList<String[]>();
+        
+        String[] orders = new String[] {
+            DataManager.getInstance().getTemplates().getPrimaryKey().name,
+            DataManager.getInstance().getTemplates().getNameColumn().name
+        };
+        
+        int tempSize = addedTemplateIds.size();
+        for (int i = 0; i < tempSize; i++) {
+            result.addAll(DataManager.getInstance().getTemplates().getTemplateInfo(DataManager.getInstance().getDatabaseConnection(), addedTemplateIds.get(i), orders, false));
+        }
+        
+        if (result.size() != addedTemplateIds.size()) {
+            this.resultMessage = new ResultMessenger().GETTING_TEMPLATES_FAILED;
+        }
+       
+        return result;
+    }
+    
+
     public String getResultMessage() {
         return this.resultMessage;
     }
@@ -121,11 +161,17 @@ public class DeviceManagementController {
         public final String SUCCESS = "Selected devices were removed successfully";
         public final String FAILED = "Some devices could not be removed";
     }
-    
+
     public class ResultMessenger {
+
         public final String GETTING_SUCCESS = "Getting info of the device is successed";
         public final String GETTING_FAILED = "Some errors happened when getting info of the device";
         public final String SETTING_FAILED = "Some errors happened when updating device info";
         public final String SETTING_SUCCESS = "Device info was updated successfully";
+
+        public final String SETTING_RELATIONSHIP_QUERY_FAILED = "Some errors happend when saving device-templates relationship to database";
+        public final String SETTING_RELATIONSHIP_SUCCESS = "Adding templates to this device was successfull";
+        
+        public final String GETTING_TEMPLATES_FAILED = "Some errors happend when getting added template information";
     }
 }

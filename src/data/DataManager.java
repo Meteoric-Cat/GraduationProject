@@ -6,6 +6,7 @@
 package data;
 
 import data.models.Devices;
+import data.models.DevicesAndTemplates;
 import data.models.TemplateItems;
 import data.models.Templates;
 import data.models.Users;
@@ -35,6 +36,7 @@ public class DataManager {
     private Devices devices;
     private Templates templates;
     private TemplateItems templateItems;
+    private DevicesAndTemplates devicesAndTemplates;
     
     private Connection connection;
 
@@ -103,6 +105,9 @@ public class DataManager {
         
         this.templateItems = new TemplateItems();
         templateItems.createTable(this.connection);
+        
+        this.devicesAndTemplates = new DevicesAndTemplates();
+        this.devicesAndTemplates.createTable(this.connection);
     }
 
     private void initFileStorage() {
@@ -134,6 +139,10 @@ public class DataManager {
     
     public TemplateItems getTemplateItems() {
         return this.templateItems;
+    }
+    
+    public DevicesAndTemplates getDevicesAndTemplates() {
+        return this.devicesAndTemplates;
     }
     
     public String getFilePath() {

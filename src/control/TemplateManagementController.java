@@ -83,7 +83,7 @@ public class TemplateManagementController {
 
     public ArrayList<String[]> proccessGettingTemplateInfo(String templateId) {
         //String[] result = DataManager.getInstance().getTemplates().getTemplateInfo(DataManager.getInstance().getDatabaseConnection(), templateLabel, null);
-        ArrayList<String[]> result = DataManager.getInstance().getTemplates().getTemplateInfo(DataManager.getInstance().getDatabaseConnection(), templateId, null);
+        ArrayList<String[]> result = DataManager.getInstance().getTemplates().getTemplateInfo(DataManager.getInstance().getDatabaseConnection(), templateId, null, true);
         ResultMessenger resultMessenger = new ResultMessenger();
 
         if (result == null) {

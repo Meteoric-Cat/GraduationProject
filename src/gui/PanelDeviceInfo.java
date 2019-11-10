@@ -9,8 +9,10 @@ import control.DeviceManagementController;
 import data.models.Devices;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -64,11 +66,13 @@ public class PanelDeviceInfo extends JPanel {
     private ActionListener listenerButton;
 
     private String currentDeviceId;    
-    
+    private ArrayList<String> addedTemplateIds;
 
     public PanelDeviceInfo() {
         initComponents();
         initListeners();
+        
+        this.addedTemplateIds = new ArrayList<String>();
     }
 
     private void initComponents() {
@@ -275,17 +279,9 @@ public class PanelDeviceInfo extends JPanel {
         scrollpaneDescription.setBounds(360, 280, 300, 120);
 
         listTemplates.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        listTemplates.setModel(new AbstractListModel<String>() {
-            String[] strings = {};
-
-            public int getSize() {
-                return strings.length;
-            }
-
-            public String getElementAt(int i) {
-                return strings[i];
-            }
-        });
+        DefaultListModel model = new DefaultListModel();
+        model.clear();
+        listTemplates.setModel(model);
         scrollpaneTemplates.setViewportView(listTemplates);
 
         add(scrollpaneTemplates);
@@ -344,7 +340,7 @@ public class PanelDeviceInfo extends JPanel {
                 }
                 
                 if (source == buttonAddTemplates) {
-                    dialogAddTemplates.initTemplateList();
+                    dialogAddTemplates.initTemplateList(PanelDeviceInfo.this.addedTemplateIds);
                     dialogAddTemplates.setEnabled(true);
                     dialogAddTemplates.setVisible(true);
                 }
@@ -384,10 +380,27 @@ public class PanelDeviceInfo extends JPanel {
             this.labelImportedTimeValue.setText(deviceInfo[8]);
             this.labelLastAccessValue.setText(deviceInfo[9]);
 
+            this.initListTemplates();
+            
             this.revalidate();
             this.repaint();
         }
 
+    }
+    
+    public void initListTemplates() {
+        this.addedTemplateIds.clear();
+        DefaultListModel listTemplatesModel = (DefaultListModel) this.listTemplates.getModel();
+        listTemplatesModel.clear();
+        
+        DeviceManagementController controller = new DeviceManagementController();
+        ArrayList<String[]> templatesInfo = controller.proccessGettingAddedTemplates(currentDeviceId);
+        int tempSize = templatesInfo.size();        
+        
+        for (int i = 0; i < tempSize; i++) {            
+            addedTemplateIds.add(templatesInfo.get(i)[0]);
+            listTemplatesModel.addElement(templatesInfo.get(i)[1]);
+        }
     }
 
     public String[] getDeviceInfoFromViews() {
@@ -400,6 +413,10 @@ public class PanelDeviceInfo extends JPanel {
         result[5] = this.tfieldIPAddress.getText();
         result[6] = this.tfieldCommunity.getText();
         return result;
+    }
+    
+    public String getCurrentDeviceId() {
+        return this.currentDeviceId;
     }
 
 }

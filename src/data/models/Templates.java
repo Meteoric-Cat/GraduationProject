@@ -133,16 +133,17 @@ public class Templates {
                     select += this.columnDefs.get(i).name + ",";
                 }
                 select += this.columnDefs.get(size).name;
+                size += 2;
             } else {
                 size = orders.length - 1;
                 for (int i = 0; i < size; i++) {
                     select += orders[i] + ",";
                 }
                 select += orders[size];
+                size += 1;
             }
 
             ResultSet res = selectStatement.executeQuery(helper.selectRecord(this.TABLE_NAME, select, null));
-            size += 2;
             String[] temp = null;
 
             while (res.next()) {
@@ -198,7 +199,7 @@ public class Templates {
         return result;
     }
 
-    public ArrayList<String[]> getTemplateInfo(Connection con, String templateId, String[] orders) {
+    public ArrayList<String[]> getTemplateInfo(Connection con, String templateId, String[] orders, boolean gettingItems) {
         //this method only return the data of a template without its id
         ArrayList<String[]> result = new ArrayList<String[]>();
         Statement selectStatement = null;
@@ -238,8 +239,10 @@ public class Templates {
                 result.add(temp);
             }
             
-            result.add(DataManager.getInstance().getTemplateItems().getItemIdsOfTemplate(con, templateId));
-            result.addAll(DataManager.getInstance().getTemplateItems().getItemsOfTemplate(con, templateId, null));
+            if (gettingItems) {
+                result.add(DataManager.getInstance().getTemplateItems().getItemIdsOfTemplate(con, templateId));
+                result.addAll(DataManager.getInstance().getTemplateItems().getItemsOfTemplate(con, templateId, null));
+            }
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
