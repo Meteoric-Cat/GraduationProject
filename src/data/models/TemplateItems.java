@@ -14,9 +14,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import other.DatabaseSyntaxHelper;
-import other.DatabaseSyntaxHelper.ColumnDefinition;
-import other.DatabaseSyntaxHelper.RecordValue;
+import helper.DatabaseSyntaxHelper;
+import helper.DatabaseSyntaxHelper.ColumnDefinition;
+import helper.DatabaseSyntaxHelper.RecordValue;
 
 /**
  *

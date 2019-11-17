@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import other.DatabaseSyntaxHelper;
-import other.DatabaseSyntaxHelper.ColumnDefinition;
-import other.DatabaseSyntaxHelper.DataType;
+import helper.DatabaseSyntaxHelper;
+import helper.DatabaseSyntaxHelper.ColumnDefinition;
+import helper.DatabaseSyntaxHelper.DataType;
 
 /**
  *
@@ -26,11 +26,13 @@ public class TemplateItemValues {
     private ArrayList<DatabaseSyntaxHelper.ColumnDefinition> columnDefs;
 
     private HashMap<String, String> foreignKeys;
-    private final int FOREIGN_KEY_COL_ID = 5;
+    private final int FORKEY_ITEM_COL_ID = 0;
+    private final int FORKEY_DEVICE_COL_ID = 2;
     
     public TemplateItemValues() {
         this.columnDefs = new ArrayList<ColumnDefinition>();
-        this.columnDefs.add(new ColumnDefinition("item_id", DataType.NUMERIC_TYPE));                
+        this.columnDefs.add(new ColumnDefinition("item_id", DataType.NUMERIC_TYPE));  
+        this.columnDefs.add(new ColumnDefinition("instance_id", DataType.NUMERIC_TYPE));
         this.columnDefs.add(new ColumnDefinition("device_id", DataType.NUMERIC_TYPE));
         this.columnDefs.add(new ColumnDefinition("value", DataType.CHAR_TYPE));
         this.columnDefs.add(new ColumnDefinition("updated_time", DataType.DATE_TYPE));
