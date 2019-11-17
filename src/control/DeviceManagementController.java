@@ -13,6 +13,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.soulwing.snmp.SimpleSnmpV2cTarget;
+import org.soulwing.snmp.SnmpCallback;
+import org.soulwing.snmp.SnmpContext;
+import org.soulwing.snmp.SnmpFactory;
+import org.soulwing.snmp.SnmpTarget;
+import org.soulwing.snmp.VarbindCollection;
+import snmpd.ObjectGettingCallback;
+import snmpd.SnmpManager;
+import snmpd.SnmpManager.SNMPVersion;
 
 /**
  *
@@ -157,6 +166,36 @@ public class DeviceManagementController {
         return result;
     }
 
+    public void processGettingSnmpObjectValues(String ipAddress, String snmpVersion, String community, boolean inTable, ArrayList<String[]> objects) {
+        SnmpTarget target = null;        
+        if (snmpVersion.equalsIgnoreCase(SNMPVersion.VERSION_2_COMMUNITY)) {
+            target = new SimpleSnmpV2cTarget();
+            ((SimpleSnmpV2cTarget) target).setAddress(ipAddress);
+            ((SimpleSnmpV2cTarget) target).setCommunity(community);
+        }
+        
+        SnmpContext context = SnmpFactory.getInstance().newContext(target, SnmpManager.getInstance().getSystemMib());
+        
+        //preprocess getting list to add instance id
+        int objListSize = objects.size();
+        String[] queryObjects = null;
+        if (!inTable) {
+            queryObjects = new String[objListSize];
+                    
+            for (int i = 0; i < objListSize; i++) {
+                int lastCharCode = (int)objects.get(i)[1].charAt(objects.get(i)[1].length() - 1);
+                if (48 > lastCharCode || lastCharCode > 57) {
+                    queryObjects[i] = objects.get(i)[1] + ".0";
+                } else {
+                    queryObjects[i] = objects.get(i)[1];
+                }
+            }
+            
+            SnmpCallback<VarbindCollection> callback = new ObjectGettingCallback();
+            context.asyncGet(callback, queryObjects);
+        }        
+    }
+    
     public String getResultMessage() {
         return this.resultMessage;
     }

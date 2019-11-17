@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import snmpd.TableGroupingHelper;
 
 /**
  *
@@ -36,14 +37,14 @@ public class TemplateManagementController {
             for (int i = 0; i < DEFAULT_CSV_TEMPLATE_INFO_COUNT; i++) {
                 templateInfo[i] = reader.readNext()[DEFAULT_CSV_VALUE_POS];
             }
-            
+
             ArrayList<String[]> itemList = new ArrayList<String[]>();
             String[] temp = reader.readNext();
 
             while ((temp = reader.readNext()) != null) {
                 itemList.add(temp);
             }
-            
+
             result = DataManager.getInstance().getTemplates().importTemplate(DataManager.getInstance().getDatabaseConnection(), templateInfo, itemList);
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
@@ -106,6 +107,69 @@ public class TemplateManagementController {
 
         this.resultMessage = resultMessenger.SETTING_SUCCESS;
         return true;
+    }
+
+    public ArrayList<ArrayList<String[]>> processBuildingUniqueItemList(String[] templateIds) {
+        ArrayList<ArrayList<String[]>> result = new ArrayList<ArrayList<String[]>>();
+        int tempSize, resultSize;
+        boolean isFound = false;
+
+        for (String templateId : templateIds) {
+            ArrayList<String[]> temp = DataManager.getInstance().getTemplateItems().getItemsOfTemplate(
+                    DataManager.getInstance().getDatabaseConnection(), templateId,
+                    new String[]{"id", "name", "object_id"});
+
+            tempSize = temp.size();
+            for (int i = 0; i < tempSize; i++) {
+                resultSize = result.size();
+                isFound = false;
+                for (int j = 0; j < resultSize; j++) {
+                    if (temp.get(i)[1].equalsIgnoreCase(result.get(j).get(0)[1])
+                            && temp.get(i)[2].equalsIgnoreCase(result.get(j).get(0)[2])) {
+                        result.get(j).add(temp.get(i));
+                        isFound = true;
+                        break;
+                    }
+                }
+
+                if (!isFound) {
+                    ArrayList<String[]> newList = new ArrayList<String[]>();
+                    newList.add(temp.get(i));
+                    result.add(newList);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public ArrayList<ArrayList<String[]>> processGroupingItemsIntoTable(ArrayList<ArrayList<String[]>> itemList) {
+        ArrayList<ArrayList<String[]>> result = new ArrayList<ArrayList<String[]>>();
+        result.add(new ArrayList<String[]>());
+        
+        TableGroupingHelper groupingHelper = new TableGroupingHelper();
+        ArrayList<String> tableNames = new ArrayList<String>();
+        int itemListSize = itemList.size(), tempId;
+        String curTableName;
+
+        for (int i = 0; i < itemListSize; i++) {
+            curTableName = groupingHelper.getTableNameForItem(itemList.get(i).get(0)[1]);
+            if (curTableName != null) {
+                tempId = tableNames.indexOf(curTableName);
+                if (tempId != -1) {
+                    result.get(tempId + 1).add(itemList.get(i).get(0));
+                } else {
+                    ArrayList<String[]> newTable = new ArrayList<String[]>();
+                    newTable.add(itemList.get(i).get(0));
+                    result.add(newTable);
+                    tableNames.add(curTableName);
+                }
+            } else {
+                result.get(0).add(itemList.get(i).get(0));
+            }
+        }
+
+        return result;
     }
 
     public String getResultMessage() {

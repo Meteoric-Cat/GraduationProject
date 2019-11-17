@@ -6,7 +6,10 @@
 package gui;
 
 
+import control.DeviceManagementController;
+import control.TemplateManagementController;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -20,7 +23,12 @@ import javax.swing.table.DefaultTableModel;
  * @author danh.nguyentranbao
  */
 public class PanelMonitorDevice extends JPanel{
-    private String[] colNames = {"Template Name", "Object Name", "Object Id", "Value", "Updated Time"};
+    //object is item id + instance id
+    private String[] defaultColNames = {"Object Name", "Object Id", "Value", "Updated Time"};    
+    private ArrayList<ArrayList<String[]>> uniqueItems;     //each array is a list of similar items.
+    //the first array is an array of unique items that will be displayed in default table model
+    private ArrayList<ArrayList<String[]>> tableModelItems;
+    private String community;
     
     private JButton buttonStart;
     private JButton buttonStop;
@@ -33,7 +41,7 @@ public class PanelMonitorDevice extends JPanel{
     private JLabel labelSNMPVersionValue;
     private JScrollPane scrollpaneItemValues;
     private JTable tableItemValues;
-    private JTextField tfieldPeriod;    
+    private JTextField tfieldPeriod;        
     
     private ActionListener listenerButton;
     
@@ -101,7 +109,7 @@ public class PanelMonitorDevice extends JPanel{
         tableItemValues.setModel(new DefaultTableModel(
             new Object [][] {
             },
-            this.colNames
+            this.defaultColNames
         ));
         scrollpaneItemValues.setViewportView(tableItemValues);
 
@@ -126,5 +134,17 @@ public class PanelMonitorDevice extends JPanel{
     
     }
     
-    
+    public void initViewData(String device, String ipAddress, String snmpVersion, String community, String[] templateIds) {
+        this.labelDeviceValue.setText(device);
+        this.labelIPAddressValue.setText(ipAddress);
+        this.labelSNMPVersionValue.setText(snmpVersion);
+        this.community = community;
+        
+        TemplateManagementController templateController = new TemplateManagementController();        
+        this.uniqueItems = templateController.processBuildingUniqueItemList(templateIds);
+        this.tableModelItems = templateController.processGroupingItemsIntoTable(this.uniqueItems);        
+        
+        DeviceManagementController deviceController = new DeviceManagementController();
+        
+    }
 }
