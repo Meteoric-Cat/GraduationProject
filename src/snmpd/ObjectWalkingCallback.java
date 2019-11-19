@@ -5,8 +5,7 @@
  */
 package snmpd;
 
-import data.DataManager;
-import java.util.ArrayList;
+import org.soulwing.snmp.SnmpAsyncWalker;
 import org.soulwing.snmp.SnmpCallback;
 import org.soulwing.snmp.SnmpEvent;
 import org.soulwing.snmp.SnmpResponse;
@@ -14,18 +13,15 @@ import org.soulwing.snmp.VarbindCollection;
 
 /**
  *
- * @author cloud
+ * @author danh.nguyentranbao
  */
-public class ObjectGettingCallback implements SnmpCallback<VarbindCollection> {
-    private int deviceId;
-    private ArrayList<String> objectIds;
-    
-    
+public class ObjectWalkingCallback implements SnmpCallback<SnmpAsyncWalker<VarbindCollection>>{
+
     @Override
-    public void onSnmpResponse(SnmpEvent<VarbindCollection> se) {
+    public void onSnmpResponse(SnmpEvent se) {
         try {
-            SnmpResponse<VarbindCollection> response = se.getResponse();            
-            VarbindCollection varbindCollection = response.get();
+            SnmpResponse<SnmpAsyncWalker<VarbindCollection>> response = se.getResponse();
+            SnmpAsyncWalker<VarbindCollection> varbinds = response.get();
                         
         } catch (Exception e) {
             e.printStackTrace();

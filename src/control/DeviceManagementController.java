@@ -14,12 +14,14 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.soulwing.snmp.SimpleSnmpV2cTarget;
+import org.soulwing.snmp.SnmpAsyncWalker;
 import org.soulwing.snmp.SnmpCallback;
 import org.soulwing.snmp.SnmpContext;
 import org.soulwing.snmp.SnmpFactory;
 import org.soulwing.snmp.SnmpTarget;
 import org.soulwing.snmp.VarbindCollection;
 import snmpd.ObjectGettingCallback;
+import snmpd.ObjectWalkingCallback;
 import snmpd.SnmpManager;
 import snmpd.SnmpManager.SNMPVersion;
 
@@ -178,10 +180,8 @@ public class DeviceManagementController {
         
         //preprocess getting list to add instance id
         int objListSize = objects.size();
-        String[] queryObjects = null;
-        if (!inTable) {
-            queryObjects = new String[objListSize];
-                    
+        String[] queryObjects = new String[objListSize];
+        if (!inTable) {                    
             for (int i = 0; i < objListSize; i++) {
                 int lastCharCode = (int)objects.get(i)[1].charAt(objects.get(i)[1].length() - 1);
                 if (48 > lastCharCode || lastCharCode > 57) {
@@ -191,9 +191,24 @@ public class DeviceManagementController {
                 }
             }
             
-            SnmpCallback<VarbindCollection> callback = new ObjectGettingCallback();
-            context.asyncGet(callback, queryObjects);
-        }        
+            SnmpCallback<VarbindCollection> getCallback = new ObjectGettingCallback();
+            context.asyncGet(getCallback, queryObjects);
+        } else {
+            for (int i = 0; i < objListSize; i++) {
+                queryObjects[i] = objects.get(i)[1];
+            }
+            
+            SnmpCallback<SnmpAsyncWalker<VarbindCollection>> walkCallback = new ObjectWalkingCallback();
+            context.asyncWalk(walkCallback, queryObjects);
+        }
+    }
+    
+    public synchronized void processReceivedDeviceData(String deviceId, String queryObjects, VarbindCollection varbinds) {
+        
+    }
+    
+    public synchronized void processReceivedDeviceData() {        
+        
     }
     
     public String getResultMessage() {

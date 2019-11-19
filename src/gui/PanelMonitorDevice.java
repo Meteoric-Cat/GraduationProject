@@ -23,12 +23,14 @@ import javax.swing.table.DefaultTableModel;
  * @author danh.nguyentranbao
  */
 public class PanelMonitorDevice extends JPanel{
-    //object is item id + instance id
+    //object id is item id + instance id, object name equals to object name + instance id
     private String[] defaultColNames = {"Object Name", "Object Id", "Value", "Updated Time"};    
     private ArrayList<ArrayList<String[]>> uniqueItems;     //each array is a list of similar items.
     //the first array is an array of unique items that will be displayed in default table model
     private ArrayList<ArrayList<String[]>> tableModelItems;
     private String community;
+    private int deviceId;
+    private int currentTable;
     
     private JButton buttonStart;
     private JButton buttonStop;
@@ -134,17 +136,26 @@ public class PanelMonitorDevice extends JPanel{
     
     }
     
-    public void initViewData(String device, String ipAddress, String snmpVersion, String community, String[] templateIds) {
+    public void initViewData(int deviceId, String device, String ipAddress, String snmpVersion, String community, String[] templateIds) {
         this.labelDeviceValue.setText(device);
         this.labelIPAddressValue.setText(ipAddress);
         this.labelSNMPVersionValue.setText(snmpVersion);
-        this.community = community;
+        
+        this.deviceId = deviceId;
+        this.community = community;        
         
         TemplateManagementController templateController = new TemplateManagementController();        
         this.uniqueItems = templateController.processBuildingUniqueItemList(templateIds);
         this.tableModelItems = templateController.processGroupingItemsIntoTable(this.uniqueItems);        
         
-        DeviceManagementController deviceController = new DeviceManagementController();
-        
+        this.currentTable = 0;
+        DeviceManagementController deviceController = new DeviceManagementController();        
+    }
+    
+    public void updateDataToTable(ArrayList<String[]> deviceData) {
+    }
+    
+    public int getCurrentTable() {
+        return this.currentTable;
     }
 }
