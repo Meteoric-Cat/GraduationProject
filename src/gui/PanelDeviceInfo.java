@@ -67,6 +67,7 @@ public class PanelDeviceInfo extends JPanel {
     private JMenuItem mitemDelete;
 
     private DialogAddTemplates dialogAddTemplates;
+    private PanelMonitorDevice panelMonitorDevice;
 
     private ActionListener listenerButton;
     private ActionListener listenerMenuItem;
@@ -327,6 +328,7 @@ public class PanelDeviceInfo extends JPanel {
         this.dialogAddTemplates.setEnabled(false);
 
         initMenus();
+        initChildPanels();
     }
 
     private void initMenus() {
@@ -336,6 +338,10 @@ public class PanelDeviceInfo extends JPanel {
         this.pmenuTemplates.add(this.mitemDelete);
 
         this.listTemplates.setComponentPopupMenu(this.pmenuTemplates);
+    }
+    
+    private void initChildPanels() {
+        this.panelMonitorDevice = new PanelMonitorDevice();
     }
 
     private void initListeners() {
@@ -462,4 +468,7 @@ public class PanelDeviceInfo extends JPanel {
         return this.currentDeviceId;
     }
 
+    public PanelMonitorDevice getPanelMonitorDevice() {
+        return this.panelMonitorDevice;
+    }
 }

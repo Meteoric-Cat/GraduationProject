@@ -8,6 +8,7 @@ package gui;
 
 import control.DeviceManagementController;
 import control.TemplateManagementController;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.JButton;
@@ -24,7 +25,8 @@ import javax.swing.table.DefaultTableModel;
  */
 public class PanelMonitorDevice extends JPanel{
     //object id is item id + instance id, object name equals to object name + instance id
-    private String[] defaultColNames = {"Object Name", "Object Id", "Value", "Updated Time"};    
+    private String[] defaultColNames = {"Object Name", "Object Id", "Value", "Updated Time"}; 
+    private String[] currentColNames = null;
     private ArrayList<ArrayList<String[]>> uniqueItems;     //each array is a list of similar items.
     //the first array is an array of unique items that will be displayed in default table model
     private ArrayList<ArrayList<String[]>> tableModelItems;
@@ -32,6 +34,8 @@ public class PanelMonitorDevice extends JPanel{
     private int deviceId;
     private int currentTable;
     
+    private JButton buttonNextTable;
+    private JButton buttonPreviousTable;
     private JButton buttonStart;
     private JButton buttonStop;
     private JLabel labelDevice;
@@ -49,22 +53,24 @@ public class PanelMonitorDevice extends JPanel{
     
     public PanelMonitorDevice() {
         initComponents();
+        initListeners();
     }
 
     private void initComponents() {
-        
-        labelDevice = new JLabel();
-        labelDeviceValue = new JLabel();
-        labelIPAddress = new JLabel();
-        labelIPAddressValue = new JLabel();
-        labelSNMPVersion = new JLabel();
-        labelPeriods = new JLabel();
-        labelSNMPVersionValue = new JLabel();
-        tfieldPeriod = new JTextField();
-        scrollpaneItemValues = new JScrollPane();
-        tableItemValues = new JTable();
-        buttonStart = new JButton();
-        buttonStop = new JButton();
+        labelDevice = new javax.swing.JLabel();
+        labelDeviceValue = new javax.swing.JLabel();
+        labelIPAddress = new javax.swing.JLabel();
+        labelIPAddressValue = new javax.swing.JLabel();
+        labelSNMPVersion = new javax.swing.JLabel();
+        labelPeriods = new javax.swing.JLabel();
+        labelSNMPVersionValue = new javax.swing.JLabel();
+        tfieldPeriod = new javax.swing.JTextField();
+        scrollpaneItemValues = new javax.swing.JScrollPane();
+        tableItemValues = new javax.swing.JTable();
+        buttonStart = new javax.swing.JButton();
+        buttonStop = new javax.swing.JButton();
+        buttonNextTable = new javax.swing.JButton();
+        buttonPreviousTable = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(1500, 900));
         setLayout(null);
@@ -108,7 +114,7 @@ public class PanelMonitorDevice extends JPanel{
         add(tfieldPeriod);
         tfieldPeriod.setBounds(790, 60, 64, 22);
 
-        tableItemValues.setModel(new DefaultTableModel(
+        tableItemValues.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
             },
             this.defaultColNames
@@ -133,14 +139,29 @@ public class PanelMonitorDevice extends JPanel{
         buttonStop.setPreferredSize(new java.awt.Dimension(60, 30));
         add(buttonStop);
         buttonStop.setBounds(940, 55, 60, 30);
-    
+
+        buttonNextTable.setFont(new java.awt.Font("SansSerif", 0, 10)); // NOI18N
+        buttonNextTable.setText("Previous");
+        buttonNextTable.setMaximumSize(new java.awt.Dimension(75, 25));
+        buttonNextTable.setMinimumSize(new java.awt.Dimension(75, 25));
+        buttonNextTable.setPreferredSize(new java.awt.Dimension(75, 25));
+        add(buttonNextTable);
+        buttonNextTable.setBounds(1250, 850, 73, 23);
+
+        buttonPreviousTable.setFont(new java.awt.Font("SansSerif", 0, 10)); // NOI18N
+        buttonPreviousTable.setText("Next");
+        buttonPreviousTable.setMaximumSize(new java.awt.Dimension(75, 25));
+        buttonPreviousTable.setMinimumSize(new java.awt.Dimension(75, 25));
+        buttonPreviousTable.setPreferredSize(new java.awt.Dimension(75, 25));
+        add(buttonPreviousTable);
+        buttonPreviousTable.setBounds(1340, 850, 73, 23);
     }
     
     public void initViewData(int deviceId, String device, String ipAddress, String snmpVersion, String community, String[] templateIds) {
         this.labelDeviceValue.setText(device);
         this.labelIPAddressValue.setText(ipAddress);
         this.labelSNMPVersionValue.setText(snmpVersion);
-        
+                
         this.deviceId = deviceId;
         this.community = community;        
         
@@ -149,10 +170,45 @@ public class PanelMonitorDevice extends JPanel{
         this.tableModelItems = templateController.processGroupingItemsIntoTable(this.uniqueItems);        
         
         this.currentTable = 0;
+        this.currentColNames = this.defaultColNames;
         DeviceManagementController deviceController = new DeviceManagementController();        
+        deviceController.processGettingSnmpObjectValues(device, ipAddress, snmpVersion, community, false, this.tableModelItems.get(this.currentTable));
     }
     
-    public void updateDataToTable(ArrayList<String[]> deviceData) {
+    private void initListeners() {
+        this.listenerButton = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JButton source = (JButton) e.getSource();
+                if (source == buttonStart) {
+                    
+                }
+            }            
+        };
+        
+    }
+    
+    public synchronized void updateDataToTable(ArrayList<String[]> deviceData) {
+        if (deviceData == null || deviceData.size() == 0) {
+            return;
+        }
+        
+        if (deviceData.get(0).length != this.currentColNames.length) {
+            return;
+        }
+        
+        DefaultTableModel tableModel = (DefaultTableModel) this.tableItemValues.getModel();
+        int dataSize = deviceData.size();
+        for (int i = 0; i < dataSize; i++) {
+            tableModel.addRow(deviceData.get(i));
+        }
+        
+        this.revalidate();
+        this.repaint();
+    }
+    
+    public ArrayList<ArrayList<String[]>> getUniqueItems() {
+        return this.uniqueItems;
     }
     
     public int getCurrentTable() {

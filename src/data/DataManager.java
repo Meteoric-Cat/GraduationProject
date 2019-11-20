@@ -150,6 +150,10 @@ public class DataManager {
         return this.devicesAndTemplates;
     }
     
+    public TemplateItemValues getTemplateItemValues() {
+        return this.templateItemValues;
+    }
+    
     public String getFilePath() {
         return this.FILE_PATH;
     }
