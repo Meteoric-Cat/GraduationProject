@@ -172,7 +172,7 @@ public class DeviceManagementController {
         return result;
     }
 
-    public void processGettingSnmpObjectValues(String deviceId, String ipAddress, String snmpVersion, String community, boolean inTable, ArrayList<String[]> objects) {
+    public void processGettingSnmpObjectValues(int tableId, String deviceId, String ipAddress, String snmpVersion, String community, boolean inTable, ArrayList<String[]> objects) {
         SnmpTarget target = null;
         if (snmpVersion.equalsIgnoreCase(SNMPVersion.VERSION_2_COMMUNITY)) {
             target = new SimpleSnmpV2cTarget();
@@ -194,7 +194,8 @@ public class DeviceManagementController {
                 itemIds[i] = objects.get(i)[0];
             }
 
-            SnmpCallback<VarbindCollection> getCallback = new ObjectGettingCallback(deviceId, itemIds, queryObjects);
+            SnmpCallback<VarbindCollection> getCallback = new ObjectGettingCallback(
+                    tableId, deviceId, itemIds, queryObjects);
             context.asyncGet(getCallback, queryObjects);
         } else {
             for (int i = 0; i < objListSize; i++) {
@@ -202,16 +203,17 @@ public class DeviceManagementController {
                 itemIds[i] = objects.get(i)[0];
             }
 
-            SnmpCallback<SnmpAsyncWalker<VarbindCollection>> walkCallback = new ObjectWalkingCallback(deviceId, itemIds, queryObjects);
+            SnmpCallback<SnmpAsyncWalker<VarbindCollection>> walkCallback = new ObjectWalkingCallback(
+                    tableId, deviceId, itemIds, queryObjects);
             context.asyncWalk(walkCallback, queryObjects);
         }
     }
 
-    public synchronized void processReceivedDeviceData(String deviceId, String[] itemIds, String[] queryObjects, VarbindCollection varbinds) {
+    public synchronized void processReceivedDeviceData(int tableId, String deviceId, String[] itemIds, String[] queryObjects, VarbindCollection varbinds) {
         int itemListSize = itemIds.length;
         ObjectNameHelper helper = new ObjectNameHelper();
         ArrayList<ArrayList<String[]>> uniqueItems = ApplicationWindow
-                .getInstance().getPanelMain().getPanelDeviceInfo().getPanelMonitorDevice().getUniqueItems();
+                .getInstance().getPanelMain().getPanelMonitorDevice().getUniqueItems();
         int uniqueItemsSize = uniqueItems.size();
         ArrayList<String[]> viewDataList = new ArrayList<String[]>();
 
@@ -248,14 +250,14 @@ public class DeviceManagementController {
 
             viewDataList.add(dataToView);
         }
-        ApplicationWindow.getInstance().getPanelMain().getPanelDeviceInfo().getPanelMonitorDevice().updateDataToTable(viewDataList);
+        ApplicationWindow.getInstance().getPanelMain().getPanelMonitorDevice().updateDataToTable(tableId, viewDataList);
     }
 
-    public synchronized void processReceivedDeviceData(String deviceId, String[] itemIds, String[] queryObjects, ArrayList<VarbindCollection> varbindColList) {
+    public synchronized void processReceivedDeviceData(int tableId, String deviceId, String[] itemIds, String[] queryObjects, ArrayList<VarbindCollection> varbindColList) {
         //int itemListSize = itemIds.length;
         ObjectNameHelper helper = new ObjectNameHelper();
         ArrayList<ArrayList<String[]>> uniqueItems = ApplicationWindow
-                .getInstance().getPanelMain().getPanelDeviceInfo().getPanelMonitorDevice().getUniqueItems();
+                .getInstance().getPanelMain().getPanelMonitorDevice().getUniqueItems();
         int uniqueItemsSize = uniqueItems.size();
         int varbindListSize = varbindColList.size();
         ArrayList<String[]> viewDataList = new ArrayList<String[]>();
@@ -288,7 +290,7 @@ public class DeviceManagementController {
             viewDataList.add(dataToView);
         }
 
-        ApplicationWindow.getInstance().getPanelMain().getPanelDeviceInfo().getPanelMonitorDevice().updateDataToTable(viewDataList);
+        ApplicationWindow.getInstance().getPanelMain().getPanelMonitorDevice().updateDataToTable(tableId, viewDataList);
     }
 
     public String getResultMessage() {

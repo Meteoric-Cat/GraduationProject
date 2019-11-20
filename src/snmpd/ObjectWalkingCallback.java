@@ -18,11 +18,13 @@ import org.soulwing.snmp.VarbindCollection;
  * @author danh.nguyentranbao
  */
 public class ObjectWalkingCallback implements SnmpCallback<SnmpAsyncWalker<VarbindCollection>>{
+    private int tableId;
     private String deviceId;
     private String[] itemIds;
     private String[] queryObjects;
 
-    public ObjectWalkingCallback(String deviceId, String[] itemIds, String[] queryObjects) {
+    public ObjectWalkingCallback(int tableId, String deviceId, String[] itemIds, String[] queryObjects) {
+        this.tableId = tableId;
         this.deviceId = deviceId;
         this.itemIds = itemIds;
         this.queryObjects = queryObjects;
@@ -48,7 +50,7 @@ public class ObjectWalkingCallback implements SnmpCallback<SnmpAsyncWalker<Varbi
             }            
             
             DeviceManagementController controller = new DeviceManagementController();
-            controller.processReceivedDeviceData(deviceId, itemIds, queryObjects, varbindCollectionList);
+            controller.processReceivedDeviceData(tableId, deviceId, itemIds, queryObjects, varbindCollectionList);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

@@ -5,7 +5,6 @@
  */
 package gui;
 
-
 import control.DeviceManagementController;
 import control.TemplateManagementController;
 import java.awt.event.ActionEvent;
@@ -23,17 +22,18 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author danh.nguyentranbao
  */
-public class PanelMonitorDevice extends JPanel{
+public class PanelMonitorDevice extends JPanel {
+
     //object id is item id + instance id, object name equals to object name + instance id
-    private String[] defaultColNames = {"Object Name", "Object Id", "Value", "Updated Time"}; 
+    private String[] defaultColNames = {"Object Name", "Object Id", "Value", "Updated Time"};
     private String[] currentColNames = null;
     private ArrayList<ArrayList<String[]>> uniqueItems;     //each array is a list of similar items.
     //the first array is an array of unique items that will be displayed in default table model
     private ArrayList<ArrayList<String[]>> tableModelItems;
     private String community;
-    private int deviceId;
+    private String deviceId;
     private int currentTable;
-    
+
     private JButton buttonNextTable;
     private JButton buttonPreviousTable;
     private JButton buttonStart;
@@ -47,10 +47,10 @@ public class PanelMonitorDevice extends JPanel{
     private JLabel labelSNMPVersionValue;
     private JScrollPane scrollpaneItemValues;
     private JTable tableItemValues;
-    private JTextField tfieldPeriod;        
-    
+    private JTextField tfieldPeriod;
+
     private ActionListener listenerButton;
-    
+
     public PanelMonitorDevice() {
         initComponents();
         initListeners();
@@ -115,9 +115,8 @@ public class PanelMonitorDevice extends JPanel{
         tfieldPeriod.setBounds(790, 60, 64, 22);
 
         tableItemValues.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-            },
-            this.defaultColNames
+                new Object[][]{},
+                this.defaultColNames
         ));
         scrollpaneItemValues.setViewportView(tableItemValues);
 
@@ -156,61 +155,103 @@ public class PanelMonitorDevice extends JPanel{
         add(buttonPreviousTable);
         buttonPreviousTable.setBounds(1340, 850, 73, 23);
     }
-    
-    public void initViewData(int deviceId, String device, String ipAddress, String snmpVersion, String community, String[] templateIds) {
+
+    public void initViewData(String deviceId, String device, String ipAddress, String snmpVersion, String community, String[] templateIds) {
         this.labelDeviceValue.setText(device);
         this.labelIPAddressValue.setText(ipAddress);
         this.labelSNMPVersionValue.setText(snmpVersion);
-                
+
         this.deviceId = deviceId;
-        this.community = community;        
-        
-        TemplateManagementController templateController = new TemplateManagementController();        
+        this.community = community;
+
+        TemplateManagementController templateController = new TemplateManagementController();
         this.uniqueItems = templateController.processBuildingUniqueItemList(templateIds);
-        this.tableModelItems = templateController.processGroupingItemsIntoTable(this.uniqueItems);        
-        
+        this.tableModelItems = templateController.processGroupingItemsIntoTable(this.uniqueItems);
+
         this.currentTable = 0;
         this.currentColNames = this.defaultColNames;
-        DeviceManagementController deviceController = new DeviceManagementController();        
-        deviceController.processGettingSnmpObjectValues(device, ipAddress, snmpVersion, community, false, this.tableModelItems.get(this.currentTable));
+        DeviceManagementController deviceController = new DeviceManagementController();
+        deviceController.processGettingSnmpObjectValues(
+                this.currentTable, deviceId, ipAddress, snmpVersion, community, false, this.tableModelItems.get(this.currentTable));
     }
-    
+
     private void initListeners() {
         this.listenerButton = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JButton source = (JButton) e.getSource();
                 if (source == buttonStart) {
-                    
+
                 }
-            }            
+                
+            }
         };
-        
+
     }
-    
-    public synchronized void updateDataToTable(ArrayList<String[]> deviceData) {
+
+    public synchronized void updateDataToTable(int tableId, ArrayList<String[]> deviceData) {
+        if (tableId != this.currentTable) {
+            return;
+        }
+
         if (deviceData == null || deviceData.size() == 0) {
             return;
         }
-        
+
         if (deviceData.get(0).length != this.currentColNames.length) {
             return;
         }
-        
+
         DefaultTableModel tableModel = (DefaultTableModel) this.tableItemValues.getModel();
         int dataSize = deviceData.size();
         for (int i = 0; i < dataSize; i++) {
             tableModel.addRow(deviceData.get(i));
         }
-        
+
         this.revalidate();
         this.repaint();
     }
-    
+
+    public void switchTable(boolean previous) {
+        if (previous && this.currentTable > 0) {
+            this.currentTable--;
+        } else {
+            if (this.currentTable < this.tableModelItems.size()) {
+                this.currentTable++;
+            }
+        }
+
+        int tempSize = this.tableModelItems.get(this.currentTable).size();
+        String[] newHeaders = new String[this.tableModelItems.get(this.currentTable).size()];
+        for (int i = 0; i < tempSize; i++) {
+            newHeaders[i] = this.tableModelItems.get(this.currentTable).get(i)[1];
+        }
+
+        DefaultTableModel tableModel = new DefaultTableModel(
+                new String[][]{},
+                newHeaders
+        );
+        this.tableItemValues.setModel(tableModel);
+        
+        boolean inTable = (this.currentTable == 0) ? false : true;
+        
+        DeviceManagementController deviceController = new DeviceManagementController();
+        deviceController.processGettingSnmpObjectValues(this.currentTable, 
+                this.deviceId, 
+                this.labelIPAddressValue.getText(), 
+                this.labelSNMPVersionValue.getText(), 
+                this.community,
+                inTable,
+                this.tableModelItems.get(this.currentTable));
+        
+        this.repaint();
+        this.revalidate();
+    }
+
     public ArrayList<ArrayList<String[]>> getUniqueItems() {
         return this.uniqueItems;
     }
-    
+
     public int getCurrentTable() {
         return this.currentTable;
     }

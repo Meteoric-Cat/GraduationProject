@@ -18,11 +18,13 @@ import org.soulwing.snmp.VarbindCollection;
  * @author cloud
  */
 public class ObjectGettingCallback implements SnmpCallback<VarbindCollection> {
+    private int tableId;
     private String deviceId;
     private String[] itemIds;
     private String[] normalizedObjectNames;
     
-    public ObjectGettingCallback(String deviceId, String[] itemIds, String[] normalizedObjectNames) {
+    public ObjectGettingCallback(int tableId, String deviceId, String[] itemIds, String[] normalizedObjectNames) {
+        this.tableId = tableId;
         this.deviceId = deviceId;
         this.itemIds = itemIds;
         this.normalizedObjectNames = normalizedObjectNames;
@@ -34,7 +36,7 @@ public class ObjectGettingCallback implements SnmpCallback<VarbindCollection> {
             SnmpResponse<VarbindCollection> response = se.getResponse();            
             VarbindCollection varbindCollection = response.get();
             DeviceManagementController controller = new DeviceManagementController();
-            controller.processReceivedDeviceData(deviceId, itemIds, normalizedObjectNames, varbindCollection);
+            controller.processReceivedDeviceData(tableId, deviceId, itemIds, normalizedObjectNames, varbindCollection);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

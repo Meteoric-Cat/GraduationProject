@@ -6,6 +6,7 @@
             <file>file:/E:/SchoolProject/GraduationProject/src/snmpd/SnmpManager.java</file>
             <file>file:/E:/SchoolProject/GraduationProject/src/data/DataManager.java</file>
             <file>file:/E:/SchoolProject/GraduationProject/src/gui/PanelTemplateInfo.java</file>
+            <file>file:/E:/SchoolProject/GraduationProject/src/gui/PanelDevicesList.java</file>
             <file>file:/E:/SchoolProject/GraduationProject/src/control/TemplateManagementController.java</file>
             <file>file:/E:/SchoolProject/GraduationProject/src/snmpd/ObjectWalkingCallback.java</file>
             <file>file:/E:/SchoolProject/GraduationProject/src/gui/PanelMonitorDevice.java</file>
@@ -14,7 +15,9 @@
             <file>file:/E:/SchoolProject/GraduationProject/src/control/DeviceManagementController.java</file>
             <file>file:/E:/SchoolProject/GraduationProject/src/data/models/TemplateItems.java</file>
             <file>file:/E:/SchoolProject/GraduationProject/src/data/models/Devices.java</file>
+            <file>file:/E:/SchoolProject/GraduationProject/src/helper/DatabaseSyntaxHelper.java</file>
             <file>file:/E:/SchoolProject/GraduationProject/src/gui/ApplicationWindow.java</file>
+            <file>file:/E:/SchoolProject/GraduationProject/src/data/models/DevicesAndTemplates.java</file>
             <file>file:/E:/SchoolProject/GraduationProject/src/snmpd/TableGroupingHelper.java</file>
             <file>file:/E:/SchoolProject/GraduationProject/src/gui/PanelMain.java</file>
             <file>file:/E:/SchoolProject/GraduationProject/src/data/models/TemplateItemValues.java</file>

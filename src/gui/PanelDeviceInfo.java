@@ -67,7 +67,6 @@ public class PanelDeviceInfo extends JPanel {
     private JMenuItem mitemDelete;
 
     private DialogAddTemplates dialogAddTemplates;
-    private PanelMonitorDevice panelMonitorDevice;
 
     private ActionListener listenerButton;
     private ActionListener listenerMenuItem;
@@ -328,7 +327,6 @@ public class PanelDeviceInfo extends JPanel {
         this.dialogAddTemplates.setEnabled(false);
 
         initMenus();
-        initChildPanels();
     }
 
     private void initMenus() {
@@ -338,10 +336,6 @@ public class PanelDeviceInfo extends JPanel {
         this.pmenuTemplates.add(this.mitemDelete);
 
         this.listTemplates.setComponentPopupMenu(this.pmenuTemplates);
-    }
-    
-    private void initChildPanels() {
-        this.panelMonitorDevice = new PanelMonitorDevice();
     }
 
     private void initListeners() {
@@ -367,6 +361,25 @@ public class PanelDeviceInfo extends JPanel {
                     dialogAddTemplates.setEnabled(true);
                     dialogAddTemplates.setVisible(true);
                 }
+
+                if (source == buttonMonitor) {
+                    int[] selectedIds = PanelDeviceInfo.this.listTemplates.getSelectedIndices();
+                    if (selectedIds.length > 0) {
+                        String[] templateIds = new String[selectedIds.length];
+                        for (int i = 0; i < selectedIds.length; i++) {
+                            templateIds[i] = addedTemplateIds.get(selectedIds[i]);
+                        }
+
+                        ApplicationWindow.getInstance().switchPanel(ApplicationWindow.PANEL_ID.MAIN);
+                        ApplicationWindow.getInstance().getPanelMain().getPanelMonitorDevice().initViewData(
+                                currentDeviceId,
+                                tfieldName.getText(),
+                                tfieldIPAddress.getText(),
+                                tfieldSNMPVersion.getText(),
+                                tfieldCommunity.getText(), 
+                                templateIds);
+                    } 
+                }
             }
         };
 
@@ -391,8 +404,8 @@ public class PanelDeviceInfo extends JPanel {
 
                     if (!controller.proccessDeletingAddedTemplates(currentDeviceId, selectedTemplateIds)) {
                         JOptionPane.showConfirmDialog(null, controller.getResultMessage());
-                    } 
-                    
+                    }
+
                     PanelDeviceInfo.this.initListTemplates();
                 }
             }
@@ -468,7 +481,4 @@ public class PanelDeviceInfo extends JPanel {
         return this.currentDeviceId;
     }
 
-    public PanelMonitorDevice getPanelMonitorDevice() {
-        return this.panelMonitorDevice;
-    }
 }
