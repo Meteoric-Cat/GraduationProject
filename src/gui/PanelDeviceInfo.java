@@ -370,7 +370,7 @@ public class PanelDeviceInfo extends JPanel {
                             templateIds[i] = addedTemplateIds.get(selectedIds[i]);
                         }
 
-                        ApplicationWindow.getInstance().switchPanel(ApplicationWindow.PANEL_ID.MAIN);
+                        ApplicationWindow.getInstance().getPanelMain().switchPanelForDisplayDetail(PanelMain.PANEL_ID.PANEL_MONITOR_DEVICE);
                         ApplicationWindow.getInstance().getPanelMain().getPanelMonitorDevice().initViewData(
                                 currentDeviceId,
                                 tfieldName.getText(),
@@ -387,6 +387,7 @@ public class PanelDeviceInfo extends JPanel {
         this.buttonCancelInfo.addActionListener(this.listenerButton);
         this.buttonAddTemplates.addActionListener(this.listenerButton);
         this.buttonCancelTemplates.addActionListener(this.listenerButton);
+        this.buttonMonitor.addActionListener(this.listenerButton);
 
         this.listenerMenuItem = new ActionListener() {
             @Override

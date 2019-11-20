@@ -119,6 +119,7 @@ public class TemplateManagementController {
                     DataManager.getInstance().getDatabaseConnection(), templateId,
                     new String[]{"id", "name", "object_id"});
 
+//            System.out.println(temp.get(0)[1]);
             tempSize = temp.size();
             for (int i = 0; i < tempSize; i++) {
                 resultSize = result.size();

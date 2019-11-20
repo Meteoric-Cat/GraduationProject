@@ -172,9 +172,9 @@ public class TemplateItems {
             } else {
                 tempSize = orders.length - 1;
                 for (int i = 0; i < tempSize; i++) {
-                    select += (this.columnDefs.get(i).name +",");
+                    select += orders[i] +",";
                 }
-                select += this.columnDefs.get(tempSize).name;
+                select += orders[tempSize];
             }
 
             ResultSet res = selectStatement.executeQuery(helper.selectRecord(this.TABLE_NAME, select,

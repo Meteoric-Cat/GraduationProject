@@ -34,7 +34,7 @@ public class ObjectGettingCallback implements SnmpCallback<VarbindCollection> {
     public void onSnmpResponse(SnmpEvent<VarbindCollection> se) {
         try {
             SnmpResponse<VarbindCollection> response = se.getResponse();            
-            VarbindCollection varbindCollection = response.get();
+            VarbindCollection varbindCollection = response.get();            
             DeviceManagementController controller = new DeviceManagementController();
             controller.processReceivedDeviceData(tableId, deviceId, itemIds, normalizedObjectNames, varbindCollection);
         } catch (Exception e) {

@@ -22,6 +22,7 @@ import org.soulwing.snmp.SnmpCallback;
 import org.soulwing.snmp.SnmpContext;
 import org.soulwing.snmp.SnmpFactory;
 import org.soulwing.snmp.SnmpTarget;
+import org.soulwing.snmp.Varbind;
 import org.soulwing.snmp.VarbindCollection;
 import snmpd.ObjectGettingCallback;
 import snmpd.ObjectNameHelper;
@@ -190,7 +191,9 @@ public class DeviceManagementController {
 
         if (!inTable) {
             for (int i = 0; i < objListSize; i++) {
+//                System.out.println(objects.get(i)[1]);
                 queryObjects[i] = helper.normalizeNameToQuery(objects.get(i)[1]);
+//                System.out.println(queryObjects[i]);
                 itemIds[i] = objects.get(i)[0];
             }
 
@@ -217,10 +220,19 @@ public class DeviceManagementController {
         int uniqueItemsSize = uniqueItems.size();
         ArrayList<String[]> viewDataList = new ArrayList<String[]>();
 
+//        System.out.println(queryObjects[0]);
+//        for (Varbind varbind : varbinds) {
+//            System.out.println(varbind.getName());
+//            System.out.println(varbind.toString());
+//        }
+//        System.out.println(varbinds.toString());        
+        
         for (int i = 0; i < itemListSize; i++) {
             String[] dataToView = new String[4];
             dataToView[0] = queryObjects[i];
-            dataToView[2] = varbinds.get(queryObjects[i]).toString();
+//            System.out.println(queryObjects[i]);
+//            System.out.println(varbinds.get(helper.denormalizeQueryName(queryObjects[i])[0]));
+            dataToView[2] = varbinds.get(i).asString();
 
             for (int j = 0; j < uniqueItemsSize; j++) {
                 if (uniqueItems.get(j).get(0)[0].equalsIgnoreCase(itemIds[i])) {
