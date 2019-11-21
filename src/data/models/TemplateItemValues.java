@@ -68,7 +68,13 @@ public class TemplateItemValues {
         try {
             insertStatement = con.createStatement();
             DatabaseSyntaxHelper helper = new DatabaseSyntaxHelper();
-            RecordValue[] valueSet = new RecordValue[data.length + 1];
+            RecordValue[] valueSet = null;
+            if (data.length < this.columnDefs.size()) {
+                valueSet = new RecordValue[data.length + 1];
+            } else {
+                valueSet = new RecordValue[data.length];
+            }
+
             for (int i = 0; i < data.length; i++) {
                 valueSet[i] = new RecordValue(this.columnDefs.get(i).name, data[i], this.columnDefs.get(i).type);
             }
@@ -79,7 +85,11 @@ public class TemplateItemValues {
             }
 
             insertStatement.executeUpdate(helper.insertRecord(TABLE_NAME, valueSet));
-            result = valueSet[data.length].getValue();
+            if (data.length < this.columnDefs.size()) {
+                result = valueSet[data.length].getValue();
+            } else {
+                result = valueSet[data.length - 1].getValue();
+            }
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {

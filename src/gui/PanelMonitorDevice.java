@@ -183,22 +183,36 @@ public class PanelMonitorDevice extends JPanel {
                 if (source == buttonStart) {
 
                 }
-                
+                if (source == buttonPreviousTable) {
+                    PanelMonitorDevice.this.switchTable(true);
+                }
+                if (source == buttonNextTable) {
+                    PanelMonitorDevice.this.switchTable(false);
+                }
             }
         };
-
+        
+        this.buttonNextTable.addActionListener(this.listenerButton);
+        this.buttonPreviousTable.addActionListener(this.listenerButton);
     }
 
     public synchronized void updateDataToTable(int tableId, ArrayList<String[]> deviceData) {
         if (tableId != this.currentTable) {
+            //System.out.println(1);
             return;
         }
-
+        
         if (deviceData == null || deviceData.size() == 0) {
+            //System.out.println(2);
             return;
         }
 
+//        if (deviceData != null && deviceData.get(0) != null) {
+//            System.out.println(deviceData.get(0).length);
+//        }
+        
         if (deviceData.get(0).length != this.currentColNames.length) {
+//            System.out.println(3);
             return;
         }
 
@@ -213,6 +227,7 @@ public class PanelMonitorDevice extends JPanel {
     }
 
     public void switchTable(boolean previous) {
+        //System.out.println(previous);
         if (previous && this.currentTable > 0) {
             this.currentTable--;
         } else {
@@ -221,11 +236,16 @@ public class PanelMonitorDevice extends JPanel {
             }
         }
 
+        System.out.println(this.currentTable);
+        
         int tempSize = this.tableModelItems.get(this.currentTable).size();
-        String[] newHeaders = new String[this.tableModelItems.get(this.currentTable).size()];
+        String[] newHeaders = new String[tempSize + 2];
+        newHeaders[0] = "Id";
         for (int i = 0; i < tempSize; i++) {
-            newHeaders[i] = this.tableModelItems.get(this.currentTable).get(i)[1];
+            newHeaders[i + 1] = this.tableModelItems.get(this.currentTable).get(i)[1];
         }
+        newHeaders[tempSize + 1] = "Updated Time";
+        this.currentColNames = newHeaders;
 
         DefaultTableModel tableModel = new DefaultTableModel(
                 new String[][]{},

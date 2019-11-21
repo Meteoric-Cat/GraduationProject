@@ -185,11 +185,13 @@ public class DeviceManagementController {
 
         //preprocess getting list to add instance id
         int objListSize = objects.size();
-        String[] queryObjects = new String[objListSize];
-        String[] itemIds = new String[objListSize];
+        String[] queryObjects = null;
+        String[] itemIds = null;
         ObjectNameHelper helper = new ObjectNameHelper();
 
         if (!inTable) {
+            queryObjects = new String[objListSize];
+            itemIds = new String[objListSize];
             for (int i = 0; i < objListSize; i++) {
 //                System.out.println(objects.get(i)[1]);
                 queryObjects[i] = helper.normalizeNameToQuery(objects.get(i)[1]);
@@ -201,14 +203,18 @@ public class DeviceManagementController {
                     tableId, deviceId, itemIds, queryObjects);
             context.asyncGet(getCallback, queryObjects);
         } else {
-            for (int i = 0; i < objListSize; i++) {
-                queryObjects[i] = objects.get(i)[1];
-                itemIds[i] = objects.get(i)[0];
+            itemIds = new String[objListSize];
+            queryObjects = new String[objListSize + 1];            
+            queryObjects[0] = "sysUpTime";
+            
+            for (int i = 1; i <= objListSize; i++) {
+                queryObjects[i] = objects.get(i - 1)[1];
+                itemIds[i - 1] = objects.get(i - 1)[0];
             }
 
             SnmpCallback<SnmpAsyncWalker<VarbindCollection>> walkCallback = new ObjectWalkingCallback(
                     tableId, deviceId, itemIds, queryObjects);
-            context.asyncWalk(walkCallback, queryObjects);
+            context.asyncWalk(walkCallback, 1, queryObjects);
         }
     }
 
@@ -280,10 +286,10 @@ public class DeviceManagementController {
             SimpleDateFormat dateFormatter = new SimpleDateFormat();
             dataToView[itemIds.length + 1] = dateFormatter.format(new Date());
 
-            for (int j = 0; j < itemIds.length; j++) {
-                dataToView[j + 1] = varbindColList.get(i).get(queryObjects[j]).asString();
+            for (int j = 1; j < queryObjects.length; j++) {
+                dataToView[j] = varbindColList.get(i).get(queryObjects[j]).asString();
                 for (int k = 0; k < uniqueItemsSize; k++) {
-                    if (uniqueItems.get(k).get(0)[0].equalsIgnoreCase(itemIds[j])) {
+                    if (uniqueItems.get(k).get(0)[0].equalsIgnoreCase(itemIds[j - 1])) {
                         int tempSize = uniqueItems.get(k).size();
                         for (int m = 0; m < tempSize; m++) {
                             DataManager.getInstance().getTemplateItemValues().insertTemplateItemValue(
@@ -291,14 +297,14 @@ public class DeviceManagementController {
                                     uniqueItems.get(k).get(m)[0],
                                     dataToView[0],
                                     deviceId,
-                                    dataToView[j + 1],
+                                    dataToView[j],
                                     dataToView[itemIds.length + 1]);
                         }
                         break;
                     }                    
                 }
             }
-            
+
             viewDataList.add(dataToView);
         }
 

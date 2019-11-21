@@ -12,10 +12,12 @@
             <file>file:/home/cloud/Documents/Java/Graduation/Project/src/data/models/Devices.java</file>
             <file>file:/home/cloud/Documents/Java/Graduation/Project/src/gui/PanelTemplatesList.java</file>
             <file>file:/home/cloud/Documents/Java/Graduation/Project/src/control/DeviceManagementController.java</file>
+            <file>file:/home/cloud/Documents/Java/Graduation/Project/src/snmpd/ObjectWalkingCallback.java</file>
             <file>file:/home/cloud/Documents/Java/Graduation/Project/src/control/TemplateManagementController.java</file>
             <file>file:/home/cloud/Documents/Java/Graduation/Project/src/snmpd/TableGroupingHelper.java</file>
             <file>file:/home/cloud/Documents/Java/Graduation/Project/src/data/models/DevicesAndTemplates.java</file>
             <file>file:/home/cloud/Documents/Java/Graduation/Project/src/data/models/Users.java</file>
+            <file>file:/home/cloud/Documents/Java/Graduation/Project/src/helper/DatabaseSyntaxHelper.java</file>
             <file>file:/home/cloud/Documents/Java/Graduation/Project/src/data/models/Templates.java</file>
             <file>file:/home/cloud/Documents/Java/Graduation/Project/src/gui/PanelDeviceInfo.java</file>
             <file>file:/home/cloud/Documents/Java/Graduation/Project/src/gui/PanelTemplateInfo.java</file>

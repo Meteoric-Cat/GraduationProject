@@ -7,6 +7,7 @@ package snmpd;
 
 import control.DeviceManagementController;
 import java.util.ArrayList;
+import java.util.Set;
 import org.soulwing.snmp.SnmpAsyncWalker;
 import org.soulwing.snmp.SnmpCallback;
 import org.soulwing.snmp.SnmpEvent;
@@ -36,16 +37,21 @@ public class ObjectWalkingCallback implements SnmpCallback<SnmpAsyncWalker<Varbi
             SnmpResponse<SnmpAsyncWalker<VarbindCollection>> response = se.getResponse();
             SnmpAsyncWalker<VarbindCollection> walker = response.get();
             ArrayList<VarbindCollection> varbindCollectionList = new ArrayList<VarbindCollection>();
-            SnmpResponse<VarbindCollection> temp = walker.next();
-            
+            VarbindCollection temp = walker.next().get();
+//            Set<String> keySet = temp.get().keySet();
+//            for (String value: keySet) {
+//                System.out.println(value);
+//            }
             while (temp != null) {
-                varbindCollectionList.add(temp.get());
+                //System.out.println(1);
+                varbindCollectionList.add(temp);
+                //System.out.println(temp.get().keySet())
                 try {
-                    temp = walker.next();
+                    temp = walker.next().get();
                 } catch (Exception e) {
                     //e.printStackTrace();
                     walker.invoke();
-                    temp = walker.next();
+                    temp = walker.next().get();
                 }             
             }            
             
