@@ -180,6 +180,7 @@ public class DeviceManagementController {
             target = new SimpleSnmpV2cTarget();
             ((SimpleSnmpV2cTarget) target).setAddress(ipAddress);
             ((SimpleSnmpV2cTarget) target).setCommunity(community);
+            //System.out.println(snmpVersion);
         }
 
         SnmpContext context = SnmpFactory.getInstance().newContext(target, SnmpManager.getInstance().getSystemMib());
@@ -314,14 +315,18 @@ public class DeviceManagementController {
     public void processStartingTimerToGetDeviceData(int periodTime, int tableId, String deviceId, String ipAddress, String snmpVersion, String community, boolean inTable, ArrayList<String[]> objects) {
         GettingDeviceDataTask gettingTask = new GettingDeviceDataTask(tableId, deviceId,
                 ipAddress, snmpVersion, community, inTable, objects);
-        SnmpManager.getInstance().cancelQueryTimerTasks();
+        try {
+            SnmpManager.getInstance().cancelQueryTimerTasks();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         SnmpManager.getInstance().getQueryTimer().schedule(gettingTask, periodTime * 1000, periodTime * 1000);
     }
 
     public void processCancelingGettingTimer() {
         SnmpManager.getInstance().cancelQueryTimerTasks();
     }
-    
+
     public String getResultMessage() {
         return this.resultMessage;
     }
@@ -375,6 +380,8 @@ public class DeviceManagementController {
         @Override
         public void run() {
             DeviceManagementController deviceController = new DeviceManagementController();
+//            if (snmpVersion.equalsIgnoreCase(SNMPVersion.VERSION_2_COMMUNITY)) 
+//                System.out.println("HELLO WORLD WITH METEORIC CAT");
             deviceController.processGettingSnmpObjectValues(tableId, deviceId, ipAddress, snmpVersion, community, inTable, objects);
         }
 

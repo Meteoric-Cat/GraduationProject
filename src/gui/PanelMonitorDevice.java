@@ -189,7 +189,7 @@ public class PanelMonitorDevice extends JPanel {
                             currentTable,
                             deviceId,
                             labelIPAddressValue.getText(),
-                            labelSNMPVersion.getText(),
+                            labelSNMPVersionValue.getText(),
                             community,
                             inTable,
                             tableModelItems.get(currentTable));
@@ -232,6 +232,11 @@ public class PanelMonitorDevice extends JPanel {
 //            return;
 //        }
         DefaultTableModel tableModel = (DefaultTableModel) this.tableItemValues.getModel();
+        int rowCount = tableModel.getRowCount();
+        for (int i = rowCount; i >= 1; i--) {
+            tableModel.removeRow(i - 1);
+        }
+        
         int dataSize = deviceData.size();
         for (int i = 0; i < dataSize; i++) {
             tableModel.addRow(deviceData.get(i));
@@ -245,10 +250,8 @@ public class PanelMonitorDevice extends JPanel {
         //System.out.println(previous);
         if (previous && this.currentTable > 0) {
             this.currentTable--;
-        } else {
-            if (this.currentTable < this.tableModelItems.size() - 1) {
-                this.currentTable++;
-            }
+        } else if (this.currentTable < this.tableModelItems.size() - 1) {
+            this.currentTable++;
         }
 
         int tempSize = this.tableModelItems.get(this.currentTable).size();
@@ -267,8 +270,8 @@ public class PanelMonitorDevice extends JPanel {
         this.tableItemValues.setModel(tableModel);
 
         boolean inTable = (this.currentTable == 0) ? false : true;
-        DeviceManagementController deviceController = new DeviceManagementController();        
-        deviceController.processCancelingGettingTimer();                
+        DeviceManagementController deviceController = new DeviceManagementController();
+        deviceController.processCancelingGettingTimer();
         deviceController.processGettingSnmpObjectValues(this.currentTable,
                 this.deviceId,
                 this.labelIPAddressValue.getText(),
@@ -276,7 +279,7 @@ public class PanelMonitorDevice extends JPanel {
                 this.community,
                 inTable,
                 this.tableModelItems.get(this.currentTable));
-        
+
         this.repaint();
         this.revalidate();
     }
@@ -288,11 +291,11 @@ public class PanelMonitorDevice extends JPanel {
     public int getCurrentTable() {
         return this.currentTable;
     }
-    
+
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
-        
+
         if (!enabled) {
             DeviceManagementController controller = new DeviceManagementController();
             controller.processCancelingGettingTimer();

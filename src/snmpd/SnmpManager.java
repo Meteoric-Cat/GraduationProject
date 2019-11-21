@@ -62,6 +62,8 @@ public class SnmpManager {
     public void cancelQueryTimerTasks() {
         this.queryTimer.cancel();
         this.queryTimer.purge();
+        
+        this.queryTimer = new Timer();        
     }
     
     public class SNMPVersion {
