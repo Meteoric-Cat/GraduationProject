@@ -7,6 +7,7 @@ package project;
 
 import data.DataManager;
 import gui.ApplicationWindow;
+import snmpd.SnmpManager;
 
 /**
  *
@@ -39,6 +40,7 @@ public class Project {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
+                SnmpManager.getInstance().cancelQueryTimerTasks();
                 DataManager.getInstance().cleanUp();
             }
         });
