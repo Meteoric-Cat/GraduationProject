@@ -57,6 +57,7 @@ public class PanelMonitorDevice extends JPanel {
     }
 
     private void initComponents() {
+
         labelDevice = new javax.swing.JLabel();
         labelDeviceValue = new javax.swing.JLabel();
         labelIPAddress = new javax.swing.JLabel();
@@ -69,8 +70,8 @@ public class PanelMonitorDevice extends JPanel {
         tableItemValues = new javax.swing.JTable();
         buttonStart = new javax.swing.JButton();
         buttonStop = new javax.swing.JButton();
-        buttonNextTable = new javax.swing.JButton();
         buttonPreviousTable = new javax.swing.JButton();
+        buttonNextTable = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(1500, 900));
         setLayout(null);
@@ -139,21 +140,21 @@ public class PanelMonitorDevice extends JPanel {
         add(buttonStop);
         buttonStop.setBounds(940, 55, 60, 30);
 
-        buttonNextTable.setFont(new java.awt.Font("SansSerif", 0, 10)); // NOI18N
-        buttonNextTable.setText("Previous");
-        buttonNextTable.setMaximumSize(new java.awt.Dimension(75, 25));
-        buttonNextTable.setMinimumSize(new java.awt.Dimension(75, 25));
-        buttonNextTable.setPreferredSize(new java.awt.Dimension(75, 25));
-        add(buttonNextTable);
-        buttonNextTable.setBounds(1250, 850, 73, 23);
-
         buttonPreviousTable.setFont(new java.awt.Font("SansSerif", 0, 10)); // NOI18N
-        buttonPreviousTable.setText("Next");
+        buttonPreviousTable.setText("Previous");
         buttonPreviousTable.setMaximumSize(new java.awt.Dimension(75, 25));
         buttonPreviousTable.setMinimumSize(new java.awt.Dimension(75, 25));
         buttonPreviousTable.setPreferredSize(new java.awt.Dimension(75, 25));
         add(buttonPreviousTable);
-        buttonPreviousTable.setBounds(1340, 850, 73, 23);
+        buttonPreviousTable.setBounds(1250, 850, 75, 25);
+
+        buttonNextTable.setFont(new java.awt.Font("SansSerif", 0, 10)); // NOI18N
+        buttonNextTable.setText("Next");
+        buttonNextTable.setMaximumSize(new java.awt.Dimension(75, 25));
+        buttonNextTable.setMinimumSize(new java.awt.Dimension(75, 25));
+        buttonNextTable.setPreferredSize(new java.awt.Dimension(75, 25));
+        add(buttonNextTable);
+        buttonNextTable.setBounds(1340, 850, 75, 25);
     }
 
     public void initViewData(String deviceId, String device, String ipAddress, String snmpVersion, String community, String[] templateIds) {
@@ -181,7 +182,21 @@ public class PanelMonitorDevice extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 JButton source = (JButton) e.getSource();
                 if (source == buttonStart) {
+                    DeviceManagementController controller = new DeviceManagementController();
+                    boolean inTable = (currentTable == 0) ? false : true;
 
+                    controller.processStartingTimerToGetDeviceData(Integer.parseInt(tfieldPeriod.getText()),
+                            currentTable,
+                            deviceId,
+                            labelIPAddressValue.getText(),
+                            labelSNMPVersion.getText(),
+                            community,
+                            inTable,
+                            tableModelItems.get(currentTable));
+                }
+                if (source == buttonStop) {
+                    DeviceManagementController controller = new DeviceManagementController();;
+                    controller.processCancelingGettingTimer();
                 }
                 if (source == buttonPreviousTable) {
                     PanelMonitorDevice.this.switchTable(true);
@@ -191,7 +206,9 @@ public class PanelMonitorDevice extends JPanel {
                 }
             }
         };
-        
+
+        this.buttonStart.addActionListener(this.listenerButton);
+        this.buttonStop.addActionListener(this.listenerButton);
         this.buttonNextTable.addActionListener(this.listenerButton);
         this.buttonPreviousTable.addActionListener(this.listenerButton);
     }
@@ -201,7 +218,7 @@ public class PanelMonitorDevice extends JPanel {
             //System.out.println(1);
             return;
         }
-        
+
         if (deviceData == null || deviceData.size() == 0) {
             //System.out.println(2);
             return;
@@ -210,12 +227,10 @@ public class PanelMonitorDevice extends JPanel {
 //        if (deviceData != null && deviceData.get(0) != null) {
 //            System.out.println(deviceData.get(0).length);
 //        }
-        
-        if (deviceData.get(0).length != this.currentColNames.length) {
+//        if (deviceData.get(0).length != this.currentColNames.length) {
 //            System.out.println(3);
-            return;
-        }
-
+//            return;
+//        }
         DefaultTableModel tableModel = (DefaultTableModel) this.tableItemValues.getModel();
         int dataSize = deviceData.size();
         for (int i = 0; i < dataSize; i++) {
@@ -231,13 +246,11 @@ public class PanelMonitorDevice extends JPanel {
         if (previous && this.currentTable > 0) {
             this.currentTable--;
         } else {
-            if (this.currentTable < this.tableModelItems.size()) {
+            if (this.currentTable < this.tableModelItems.size() - 1) {
                 this.currentTable++;
             }
         }
 
-        System.out.println(this.currentTable);
-        
         int tempSize = this.tableModelItems.get(this.currentTable).size();
         String[] newHeaders = new String[tempSize + 2];
         newHeaders[0] = "Id";
@@ -252,14 +265,14 @@ public class PanelMonitorDevice extends JPanel {
                 newHeaders
         );
         this.tableItemValues.setModel(tableModel);
-        
+
         boolean inTable = (this.currentTable == 0) ? false : true;
-        
-        DeviceManagementController deviceController = new DeviceManagementController();
-        deviceController.processGettingSnmpObjectValues(this.currentTable, 
-                this.deviceId, 
-                this.labelIPAddressValue.getText(), 
-                this.labelSNMPVersionValue.getText(), 
+        DeviceManagementController deviceController = new DeviceManagementController();        
+        deviceController.processCancelingGettingTimer();                
+        deviceController.processGettingSnmpObjectValues(this.currentTable,
+                this.deviceId,
+                this.labelIPAddressValue.getText(),
+                this.labelSNMPVersionValue.getText(),
                 this.community,
                 inTable,
                 this.tableModelItems.get(this.currentTable));
@@ -274,5 +287,15 @@ public class PanelMonitorDevice extends JPanel {
 
     public int getCurrentTable() {
         return this.currentTable;
+    }
+    
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        
+        if (!enabled) {
+            DeviceManagementController controller = new DeviceManagementController();
+            controller.processCancelingGettingTimer();
+        }
     }
 }

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.soulwing.snmp.SimpleSnmpV2cTarget;
@@ -173,7 +174,7 @@ public class DeviceManagementController {
         return result;
     }
 
-    public void processGettingSnmpObjectValues(int tableId, String deviceId, String ipAddress, String snmpVersion, String community, boolean inTable, ArrayList<String[]> objects) {
+    public synchronized void processGettingSnmpObjectValues(int tableId, String deviceId, String ipAddress, String snmpVersion, String community, boolean inTable, ArrayList<String[]> objects) {
         SnmpTarget target = null;
         if (snmpVersion.equalsIgnoreCase(SNMPVersion.VERSION_2_COMMUNITY)) {
             target = new SimpleSnmpV2cTarget();
@@ -204,9 +205,9 @@ public class DeviceManagementController {
             context.asyncGet(getCallback, queryObjects);
         } else {
             itemIds = new String[objListSize];
-            queryObjects = new String[objListSize + 1];            
+            queryObjects = new String[objListSize + 1];
             queryObjects[0] = "sysUpTime";
-            
+
             for (int i = 1; i <= objListSize; i++) {
                 queryObjects[i] = objects.get(i - 1)[1];
                 itemIds[i - 1] = objects.get(i - 1)[0];
@@ -232,7 +233,6 @@ public class DeviceManagementController {
 //            System.out.println(varbind.toString());
 //        }
 //        System.out.println(varbinds.toString());        
-        
         for (int i = 0; i < itemListSize; i++) {
             String[] dataToView = new String[4];
             dataToView[0] = queryObjects[i];
@@ -301,7 +301,7 @@ public class DeviceManagementController {
                                     dataToView[itemIds.length + 1]);
                         }
                         break;
-                    }                    
+                    }
                 }
             }
 
@@ -311,6 +311,17 @@ public class DeviceManagementController {
         ApplicationWindow.getInstance().getPanelMain().getPanelMonitorDevice().updateDataToTable(tableId, viewDataList);
     }
 
+    public void processStartingTimerToGetDeviceData(int periodTime, int tableId, String deviceId, String ipAddress, String snmpVersion, String community, boolean inTable, ArrayList<String[]> objects) {
+        GettingDeviceDataTask gettingTask = new GettingDeviceDataTask(tableId, deviceId,
+                ipAddress, snmpVersion, community, inTable, objects);
+        SnmpManager.getInstance().cancelQueryTimerTasks();
+        SnmpManager.getInstance().getQueryTimer().schedule(gettingTask, periodTime * 1000, periodTime * 1000);
+    }
+
+    public void processCancelingGettingTimer() {
+        SnmpManager.getInstance().cancelQueryTimerTasks();
+    }
+    
     public String getResultMessage() {
         return this.resultMessage;
     }
@@ -342,5 +353,30 @@ public class DeviceManagementController {
         public final String GETTING_TEMPLATES_FAILED = "Some errors happened when getting added template information";
 
         public final String DELETING_RELATIONSHIP_QUERY_FAILED = "Some errors happend when deleting device-templates relationship in database";
+    }
+
+    public class GettingDeviceDataTask extends TimerTask {
+
+        private int tableId;
+        private String deviceId, ipAddress, snmpVersion, community;
+        private boolean inTable;
+        private ArrayList<String[]> objects;
+
+        public GettingDeviceDataTask(int tableId, String deviceId, String ipAddress, String snmpVersion, String community, boolean inTable, ArrayList<String[]> objects) {
+            this.tableId = tableId;
+            this.deviceId = deviceId;
+            this.ipAddress = ipAddress;
+            this.snmpVersion = snmpVersion;
+            this.community = community;
+            this.inTable = inTable;
+            this.objects = objects;
+        }
+
+        @Override
+        public void run() {
+            DeviceManagementController deviceController = new DeviceManagementController();
+            deviceController.processGettingSnmpObjectValues(tableId, deviceId, ipAddress, snmpVersion, community, inTable, objects);
+        }
+
     }
 }
